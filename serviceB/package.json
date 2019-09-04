@@ -1,0 +1,15 @@
+{
+  "name": "service-b",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "forever src/server.js"
+  },
+  "author": "Eliud Arudo",
+  "license": "ISC",
+  "dependencies": {
+    "forever": "^1.0.0",
+    "node-docker-api": "^1.1.22"
+  }
+}
