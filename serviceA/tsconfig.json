@@ -1,0 +1,19 @@
+{
+    "compileOnSave": true,
+    "transpileOnly": true,
+    "compilerOptions": {
+        "outDir": "dist",
+        "rootDir": "src",
+        "declaration": true,
+        "target": "es2017",
+        "lib": [
+            "es2017"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node"
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
