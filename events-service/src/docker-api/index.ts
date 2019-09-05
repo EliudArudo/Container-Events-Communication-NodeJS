@@ -1,15 +1,10 @@
 import * as os from 'os'
 import { Docker } from 'node-docker-api'
+import { logStatusFileMessage } from '../log'
+import { ContainerInfoInterface, ParsedContainerInterface } from '../interfaces'
 
-export interface ContainerInfoInterface {
-    id: string,
-    service: string
-}
+const FILENAME = 'src/docker-api/index'
 
-export interface ParsedContainerInterface {
-    containerID: string,
-    containerService: string
-}
 
 export class DockerAPI {
 
@@ -18,7 +13,7 @@ export class DockerAPI {
 
     constructor() { }
 
-    public static async initialise(): Promise<void> {
+    private static async initialise(): Promise<void> {
         try {
             const infoWasAlreadyInitialised = this.id && this.service
             if (infoWasAlreadyInitialised)
@@ -30,7 +25,11 @@ export class DockerAPI {
 
             this.setContainerInfoUsingContainerArray(containerArray)
         } catch (e) {
-            console.log('DockerAPI:', e)
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'initialise',
+                `failed initialise`)
         }
     }
 
@@ -47,8 +46,23 @@ export class DockerAPI {
 
             return containerInfo
         } catch (e) {
-            console.log('DockerAPI:', e)
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'fetchContainerInfo',
+                `failed to fetch container Info`)
         }
+    }
+
+    public static fetchOfflineContainerInfo(): ContainerInfoInterface {
+        const id = this.id,
+            service = this.service;
+
+        const containerInfo: ContainerInfoInterface = {
+            id, service
+        }
+
+        return containerInfo
     }
 
     public static async getFreshContainers(): Promise<Array<ParsedContainerInterface>> {
@@ -63,7 +77,11 @@ export class DockerAPI {
             return parsedContainers
 
         } catch (e) {
-            console.log('DockerAPI:', e)
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'getFreshContainers',
+                `failed to fetch fresh container arrays`)
         }
     }
 
@@ -75,7 +93,11 @@ export class DockerAPI {
 
             return containerArray
         } catch (e) {
-            console.log('DockerAPI:', e)
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'getDockerContainerList',
+                `failed to fetch containers from Docker`)
         }
     }
 
@@ -115,7 +137,11 @@ export class DockerAPI {
             this.service = service
 
         } catch (e) {
-            console.log('DockerAPI:', e)
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'setContainerInfoUsingContainerArray',
+                `failed get containersArray to set`)
         }
     }
 }

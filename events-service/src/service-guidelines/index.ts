@@ -34,7 +34,8 @@ All services have a
 - adds a new record with fields
   -> from_container_id,
      from_container_service,
-     received_time, task,
+     received_time,
+     task,
      sub_task,
      request_body_id,
      to_container_id,
@@ -54,16 +55,18 @@ All services have a
     --- Solution -> send a 'ping' request through the redis pubsub and the response should be 'pong'
 
 - Sends a request to the chosen container containing
-    -> record_id (from storing new document)
+    -> recordId (from storing new document)
     -> task
     -> sub_task
     -> request_body
+    -> containerId,
+    -> service,
     -> served_by_container_id
     -> served_by_service
 
 - Listens for finished tasks come in with response
   {
-    record_id ,
+    recordId ,
     containerId,
     served_by_container_id,
     served_by_service,
@@ -74,7 +77,7 @@ All services have a
   }
   * responseBody is in JSON format
 
- - On getting response, it takes it and locates the record_id, then fills in the
+ - On getting response, it takes it and locates the recordid, then fills in the
    -> to_received_time
       to_response_body_id
       to_sent_time

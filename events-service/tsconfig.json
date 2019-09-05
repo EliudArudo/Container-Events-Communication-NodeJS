@@ -1,6 +1,7 @@
 {
     "compileOnSave": true,
     "transpileOnly": true,
+    "resolveJsonModule": true,
     "compilerOptions": {
         "outDir": "dist",
         "rootDir": "src",
