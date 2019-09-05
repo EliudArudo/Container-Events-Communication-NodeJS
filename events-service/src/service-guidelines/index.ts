@@ -6,41 +6,91 @@ All services have a
   -- Could make tasks file a github file to be downloadable
 
 
-*** This service sends task requests to Events ***
-- Requests can be through HTTP or websockets or even Events
-  -- Frontend services receive HTTP or Websockets
-  -- Backend services  receive Events
+*** This service receives and sends Tasks from consuming services***
+- Tasks received and sent Only through Redis pubsub
 
-* F- frontend, B  - backend
-
-F, B - On container start, initialise the ContainerInfo Object
+- On container start, initialise the ContainerInfo Object
   which we use the containerInfo for subsequent requests
+  (We use this for mentioning the container that served the event)
 
-F, B - On anyone sending a request to it,
-  it classifies the task according to the defined tasks file
-
-F, B - Initialisation of containerInfo is after express-'app.listen'
+- Initialisation of containerInfo is after express-'app.listen'
   or redis.subscribe
 
-F - Sending task to Event service with info
-  { containerId, service, task, subtask, requestBody }
+- On anyone sending a task to it,
+  it classifies the task according to the defined tasks file
+  and finds the corresponding service which it's supposed through
+  send it to
+
+- New task received with info
+  {
+    containerId,
+    service,
+    task,
+    subtask,
+    requestBody
+  }
   * requestBody is in JSON format
 
-B - Sending finished task to Event service with response
-  { record_id ,containerId, service, task, subtask, responseBody }
+- adds a new record with fields
+  -> from_container_id,
+     from_container_service,
+     received_time, task,
+     sub_task,
+     request_body_id,
+     to_container_id,
+     to_service,
+     served_by_container_id,
+     served_by_service
+
+
+    (body_id is the id of new document saved in request-body-collection)
+    (to_service  is found from checking tasks and which services handle them)
+    (to_container_id is found from getting container lists and containers belonging to service, and picking one of the containers)
+    (served_by_container_id is the id of the serving event service container)
+    (served_by_service is the service of the serving event service container)
+    ---- check to make sure 'from_container_service, task, sub_task, and requestBody don't match' -----
+    If these fields match, don't send it to consuming service, return it
+    to the asking service immediately (Caching through MongoDB)
+    --- Solution -> send a 'ping' request through the redis pubsub and the response should be 'pong'
+
+- Sends a request to the chosen container containing
+    -> record_id (from storing new document)
+    -> task
+    -> sub_task
+    -> request_body
+    -> served_by_container_id
+    -> served_by_service
+
+- Listens for finished tasks come in with response
+  {
+    record_id ,
+    containerId,
+    served_by_container_id,
+    served_by_service,
+    service,
+    task,
+    subtask,
+    responseBody
+  }
   * responseBody is in JSON format
 
-F, B- Subscribed to redis 'events' service
+ - On getting response, it takes it and locates the record_id, then fills in the
+   -> to_received_time
+      to_response_body_id
+      to_sent_time
+      (to_response_body_id is what it gets when it saves the response in the responses collection
+      and gets the id)
+      (to_sent_time is the time before it sends the response to the consuming service)
 
-F - On message being returned, it contains
-  { containerId, service, responseBody}
+- On message being send back, it contains
+  {
+    containerId,
+    service,
+    responseBody
+  }
   * responseBody is in JSON format
-  -> It should check whether 'containerId' and 'service'
+  -> Consuming service should check whether 'containerId' and 'service'
     matches it's container Info before consuming event
-
-- Responses
-  -- Frontend services send responses through Websockets
-  -- Backend services  send responses through Events
 
 - Pubsub info
    - all non Event services
@@ -54,13 +104,5 @@ F - On message being returned, it contains
      * Event service determines new and sent task using
       -- responseBody or requestBody fields
     (Meaning there must be a response body even in get requests)
-
-
- FUNCTION
- - For consuming services (B)
-   - After init, any message taken it uses the containerInfo
-   - Function to correctly assign functions based on TASKS
-    (SubTasks taken into these functions)
-   - Result object returned after which it sends back to the Event service
 
 */
