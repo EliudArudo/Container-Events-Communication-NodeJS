@@ -7,11 +7,9 @@ export const RedisKeys: RedisEnvInterface = {
 
 export const MongoDBKeys: MongoDBEnvInterface = {
     uri: process.env.MONGOURI,
-    port: Number(process.env.MONGOPORT),
+    port: process.env.MONGOPORT,
     database: process.env.MONGODATABASE
 }
-
-export const ExpressPort: number = Number(process.env.CONSUMER_A_PORT) || 4000
 
 export const EventService: string = process.env.EVENT_SERVICE || 'Event_Service'
 

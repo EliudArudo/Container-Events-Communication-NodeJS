@@ -28,10 +28,12 @@ mongoose.connect(mongoURI, {
             `connected successfully`)
     })
     .catch(err => {
+        console.log(err)
         logStatusFileMessage(
             'Failure',
             FILENAME,
             'mongoose.connect',
             `failed connect to mongodb database`)
 
+        process.exit(1)
     })

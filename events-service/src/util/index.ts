@@ -16,7 +16,7 @@ export async function getSelectedContainerIdAndService(task: EventInterface): Pr
 
         const selectedService = TaskMaps[task.task].toLowerCase()
         for (const container of containers) {
-            const lowerCaseContainerService = container.containerID.toLowerCase()
+            const lowerCaseContainerService = container.containerService.toLowerCase()
             const containerBelongsToSelectedService: boolean =
                 lowerCaseContainerService.includes(selectedService)
 
@@ -31,13 +31,18 @@ export async function getSelectedContainerIdAndService(task: EventInterface): Pr
             service: randomlySelectedContainer.containerService
         }
 
+        while (!selectedContainer.id) {
+            getSelectedContainerIdAndService(task)
+        }
+
         return selectedContainer
     } catch (e) {
         logStatusFileMessage(
             'Failure',
             FILENAME,
             'getSelectedContainerIdAndService',
-            `failed to getSelectedContainerIdAndService`)
+            `failed to getSelectedContainerIdAndService with error:
+            ${e}`)
     }
 
 }

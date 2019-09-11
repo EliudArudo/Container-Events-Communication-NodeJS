@@ -107,11 +107,6 @@ export async function TaskController(requestBody: any, containerInfo: ContainerI
     try {
         const task = await TaskDeterminer(requestBody, containerInfo)
 
-        logStatusFileMessage(
-            'Success',
-            FILENAME,
-            'TaskController',
-            `About to send task: ${task}`)
         sendTaskToEventsService(task, redisPublisher)
 
     } catch (e) {

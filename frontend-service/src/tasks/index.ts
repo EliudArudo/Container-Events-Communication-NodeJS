@@ -86,7 +86,6 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
             service: myContainerInfo.service,
             requestBody: JSON.stringify(requestBody)
         }
-
         return exportTask
         // Determiner chunk here
     } catch (e) {
@@ -106,12 +105,6 @@ function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: Re
 export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<void> {
     try {
         const task = await TaskDeterminer(requestBody, containerInfo)
-
-        logStatusFileMessage(
-            'Success',
-            FILENAME,
-            'TaskController',
-            `About to send task: ${task}`)
         sendTaskToEventsService(task, redisPublisher)
 
     } catch (e) {

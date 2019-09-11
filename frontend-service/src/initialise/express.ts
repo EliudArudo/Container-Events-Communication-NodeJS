@@ -10,34 +10,13 @@ const app = express()
 
 const FILENAME = 'express.ts'
 
-async function initialiseServer(): Promise<void> {
-    try {
-        logStatusFileMessage(
-            'Success',
-            FILENAME,
-            'initialiseServer',
-            `Express app running on port ${ExpressPort}`
-        )
-
-        const myContainerInfo: ContainerInfoInterface
-            = await containerInfo.fetchContainerInfo()
-
-        if (!(myContainerInfo.id && myContainerInfo.service))
-            throw new Error('Container info non existent')
-
-        logStatusFileMessage(
-            'Success',
-            FILENAME,
-            'initialiseServer',
-            `myContainerInfo ${myContainerInfo}`
-        )
-    } catch (e) {
-        logStatusFileMessage(
-            'Failure',
-            FILENAME,
-            'initialiseServer',
-            `${e.message}`)
-    }
+function initialiseServer(): void {
+    logStatusFileMessage(
+        'Success',
+        FILENAME,
+        'initialiseServer',
+        `Express app running on port ${ExpressPort}`
+    )
 }
 app.use(bodyParser.json())
 

@@ -7,27 +7,37 @@ import { EventService } from './../env/index'
 
 const FILENAME = 'logic/index.ts'
 
-export function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): void {
-    const event: ReceivedEventInterface = JSON.parse(sentEvent)
+export async function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): Promise<void> {
 
-    const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo();
-    const eventIsOurs = event.containerId === offlineContainerInfo.id &&
-        event.service === offlineContainerInfo.service
+    try {
+        const event: ReceivedEventInterface = JSON.parse(sentEvent)
 
-    const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
-        event.requestBody ? 'TASK' :
-            null
+        const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo()
+        const eventIsOurs = event.containerId === offlineContainerInfo.id &&
+            event.service === offlineContainerInfo.service
 
-    if (!eventIsOurs)
-        return
+        const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
+            event.requestBody ? 'TASK' :
+                null
 
-    switch (taskType) {
-        case 'TASK':
-            performTaskAndRespond(event)
-            break;
-        case 'RESPONSE':
-            returnResponse(event)
-            break;
+        if (!eventIsOurs)
+            return
+
+        switch (taskType) {
+            case 'TASK':
+                performTaskAndRespond(event)
+                break;
+            case 'RESPONSE':
+                returnResponse(event)
+                break;
+        }
+
+    } catch (e) {
+        logStatusFileMessage(
+            'Failure',
+            FILENAME,
+            'EventDeterminer',
+            `Failed to determing type of event:${e}`)
     }
 }
 
@@ -41,7 +51,7 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
         serviceContainerService
     } = task
 
-    const requestBody = JSON.stringify(results)
+    const responseBody = JSON.stringify(results)
 
     const event: ReceivedEventInterface = {
         containerId,
@@ -49,7 +59,7 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
         recordId,
         serviceContainerId,
         serviceContainerService,
-        requestBody
+        responseBody
     }
 
     const stringifiedEvents: string = JSON.stringify(event)
@@ -58,11 +68,6 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
 }
 
 function performTaskAndRespond(task: ReceivedEventInterface): void {
-    logStatusFileMessage(
-        'Success',
-        FILENAME,
-        'performTask',
-        `${task}`)
     const results = performLogic(task)
     sendResultsToEventService(task, results)
 }
@@ -72,7 +77,7 @@ function returnResponse(response: ReceivedEventInterface): void {
         'Success',
         FILENAME,
         'returnResponse',
-        `Return this to the user :${response}`)
+        `Return this to the user :${JSON.stringify(response)}`)
 }
 
 

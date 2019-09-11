@@ -7,49 +7,55 @@ import { DockerAPI } from "../docker-api"
 import { ContainerInfoInterface } from './../interfaces/index'
 import { getSelectedContainerIdAndService } from "../util"
 import { logStatusFileMessage } from "../log"
+import task from "node-docker-api/lib/task"
 
 const FILENAME = "/database-ops/index.ts"
 
 async function getExistingRequestDocumentID(request: string): Promise<string> {
+    let existingRequestDocumentID: string
     try {
-        const existingRequestDocument = await MongoDBRequest.findOne({
+        const existingRequestDocument: Document = await MongoDBRequest.findOne({
             request
         })
 
-        const ID = existingRequestDocument._id
-
-        return ID
-
+        if (existingRequestDocument)
+            existingRequestDocumentID = existingRequestDocument._id
     } catch (e) {
         logStatusFileMessage(
             'Failure',
             FILENAME,
             'getExistingRequestDocumentID',
-            `failed connect to make request to MongoDBRequest`)
+            `failed to get an existing ID with error: 
+            ${e}`)
+    } finally {
+        return existingRequestDocumentID
     }
 }
 
 async function getExistingTask(task: EventInterface): Promise<Document> {
+    let existingRecord: Document
     try {
         const fromContainerService = task.service
         const fromTask = task.task
         const fromSubtask = task.subtask
         const requestBodyId = await getExistingRequestDocumentID(task.requestBody)
 
-        const existingRecord = await MongoDBTask.findOne({
-            fromContainerService,
-            fromTask,
-            fromSubtask,
-            requestBodyId
-        })
+        if (requestBodyId)
+            existingRecord = await MongoDBTask.findOne({
+                fromContainerService,
+                fromTask,
+                fromSubtask,
+                requestBodyId
+            })
 
-        return existingRecord
     } catch (e) {
         logStatusFileMessage(
             'Failure',
             FILENAME,
             'getExistingTask',
-            `failed connect to get an existing Task record`)
+            `failed get an existing Task record`)
+    } finally {
+        return existingRecord
     }
 }
 
@@ -82,31 +88,32 @@ async function getExistingParsedTask(mongoDBTask: Document): Promise<Initialised
 }
 
 async function getNewParsedTask(mongoDBTask: Document, selectedContainerInfo: ContainerInfoInterface): Promise<InitialisedRecordInfoInterface> {
+    const parsedTask: InitialisedRecordInfoInterface = {
+        containerId: mongoDBTask['fromContainerId'],
+        containerService: mongoDBTask['fromContainerService'],
+        recordId: mongoDBTask._id,
+        task: mongoDBTask['task'],
+        subtask: mongoDBTask['subtask'],
+        serviceContainerId: mongoDBTask['serviceContainerId'],
+        serviceContainerService: mongoDBTask['serviceContainerService'],
+        chosenContainerId: selectedContainerInfo.id,
+        chosenContainerService: selectedContainerInfo.service
+    }
+
     try {
         const toResponseBodyId = mongoDBTask['toResponseBodyId']
         const response = await MongoDBResponse.findById(toResponseBodyId)
+        if (response)
+            parsedTask.responseBody = response['response']
 
-        const parsedTask: InitialisedRecordInfoInterface = {
-            containerId: mongoDBTask['fromContainerId'],
-            containerService: mongoDBTask['fromContainerService'],
-            recordId: mongoDBTask._id,
-            task: mongoDBTask['task'],
-            subtask: mongoDBTask['subtask'],
-            serviceContainerId: mongoDBTask['serviceContainerId'],
-            serviceContainerService: mongoDBTask['serviceContainerService'],
-            responseBody: response['response'],
-
-            chosenContainerId: selectedContainerInfo.id,
-            chosenContainerService: selectedContainerInfo.service
-        }
-
-        return parsedTask
     } catch (e) {
         logStatusFileMessage(
             'Failure',
             FILENAME,
             'getNewParsedTask',
             `failed connect to find an existing MongoDBResponse`)
+    } finally {
+        return parsedTask
     }
 
 }
@@ -115,7 +122,7 @@ async function saveNewRequestAndGetID(requestBody: string): Promise<string> {
     try {
         const request: Document = await new MongoDBRequest({
             request: requestBody
-        })
+        }).save()
 
         const ID = request._id
 
@@ -162,7 +169,7 @@ async function recordNewInitialisedTaskWithRequestId(funcTask: EventInterface, r
             serviceContainerService
         }
 
-        const newTask: Document = await new MongoDBTask(newInitTaskRecord)
+        const newTask: Document = await new MongoDBTask(newInitTaskRecord).save()
         const parsedTask = getNewParsedTask(newTask, selectedContainerInfo)
 
         return parsedTask
@@ -172,7 +179,8 @@ async function recordNewInitialisedTaskWithRequestId(funcTask: EventInterface, r
             'Failure',
             FILENAME,
             'recordNewInitialisedTaskWithRequestId',
-            `failed to record new initialised task with request ID`)
+            `failed to record new initialised task with request ID with error:
+            ${e}`)
     }
 }
 
@@ -182,13 +190,16 @@ async function recordNewTaskAndRequest(funcTask: EventInterface): Promise<Initia
         const requestBodyId: string = await saveNewRequestAndGetID(funcTask.requestBody)
         const initialisedInfo: InitialisedRecordInfoInterface = await recordNewInitialisedTaskWithRequestId(funcTask, requestBodyId)
 
+        initialisedInfo.requestBody = funcTask.requestBody
+
         return initialisedInfo
     } catch (e) {
         logStatusFileMessage(
             'Failure',
             FILENAME,
             'recordNewTaskAndRequest',
-            `failed to record new initialised task with request`)
+            `failed to record new initialised task with request with error
+            ${e}`)
     }
 }
 
@@ -217,10 +228,10 @@ export async function recordNewTaskInDB(task: EventInterface): Promise<Initialis
     }
 }
 
-export function getParsedResponse(funcResponse: EventInterface): EventInterface {
+export function getParsedResponse(funcResponse: EventInterface, oldTask: Document): EventInterface {
     const response: EventInterface = {
-        containerId: funcResponse.containerId,
-        service: funcResponse.service,
+        containerId: oldTask['fromContainerId'],
+        service: oldTask['fromContainerService'],
         responseBody: funcResponse.responseBody
     }
 
@@ -231,7 +242,7 @@ async function saveNewResponseAndGetID(responseBody: string): Promise<string> {
     try {
         const response: Document = await new MongoDBResponse({
             response: responseBody
-        })
+        }).save()
 
         const ID = response._id
 
@@ -268,13 +279,14 @@ export async function completeRecordInDB(funcResponse: EventInterface, receivedT
 
 export async function completeExistingTaskRecordInDB(funcResponse: EventInterface): Promise<EventInterface> {
     try {
-
         const toReceivedTime = new Date()
         const toResponseBodyId: string = await saveNewResponseAndGetID(funcResponse.responseBody)
 
         await completeRecordInDB(funcResponse, toReceivedTime, toResponseBodyId)
 
-        const response: EventInterface = getParsedResponse(funcResponse)
+        const task: Document = await MongoDBTask.findById(funcResponse.recordId)
+
+        const response: EventInterface = getParsedResponse(funcResponse, task)
 
         return response
 

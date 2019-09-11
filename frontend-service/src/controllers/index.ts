@@ -2,6 +2,9 @@ import { TaskController } from "../tasks"
 import { containerInfo } from "../initialise/docker-api"
 import { ContainerInfo } from "../docker-api"
 import { EventDeterminer } from "../logic"
+import { logStatusFileMessage } from "../log"
+
+const FILENAME = "controllers/index.ts"
 
 export function indexController(req: any, res: any): void {
     res.send({ message: 'Everything is alright' })

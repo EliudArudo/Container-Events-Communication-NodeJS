@@ -3,6 +3,7 @@ import { EventService } from "../env"
 import { RedisClient } from "redis"
 import { ContainerInfoInterface, TaskInterface, TASK_TYPE, SUB_TASK_TYPE } from "../interfaces"
 import { logStatusFileMessage } from "../log"
+import { DockerAPI } from '../docker-api'
 /*
   ADD takes { a1, a2 }
   MULTIPLY takes { m1, m2 }
@@ -65,7 +66,7 @@ function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
 
 }
 
-async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): Promise<TaskInterface> {
+async function TaskDeterminer(requestBody: any): Promise<TaskInterface> {
 
     try {
         const task: TASK_TYPE = DetermineTask(requestBody)
@@ -76,7 +77,7 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
         }
 
         const myContainerInfo: ContainerInfoInterface =
-            await containerInfo.fetchContainerInfo()
+            await DockerAPI.fetchOfflineContainerInfo()
 
         const exportTask: TaskInterface = {
             task,
@@ -102,15 +103,9 @@ function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: Re
     functionRedisPublisher.publish(EventService, JSON.stringify(task))
 }
 
-export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<void> {
+export async function TaskController(requestBody: any): Promise<void> {
     try {
-        const task = await TaskDeterminer(requestBody, containerInfo)
-
-        logStatusFileMessage(
-            'Success',
-            FILENAME,
-            'TaskController',
-            `About to send task: ${task}`)
+        const task = await TaskDeterminer(requestBody)
         sendTaskToEventsService(task, redisPublisher)
 
     } catch (e) {

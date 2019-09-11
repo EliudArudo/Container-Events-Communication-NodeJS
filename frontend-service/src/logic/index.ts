@@ -58,11 +58,6 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
 }
 
 function performTaskAndRespond(task: ReceivedEventInterface): void {
-    logStatusFileMessage(
-        'Success',
-        FILENAME,
-        'performTask',
-        `${task}`)
     const results = performLogic(task)
     sendResultsToEventService(task, results)
 }
@@ -72,9 +67,8 @@ function returnResponse(response: ReceivedEventInterface): void {
         'Success',
         FILENAME,
         'returnResponse',
-        `Return this to the user :${response}`)
+        `Return this to the user :${JSON.stringify(response)}`)
 }
-
 
 // LOGIC - Dev Logic
 function performLogic(task: ReceivedEventInterface): any {

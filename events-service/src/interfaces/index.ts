@@ -10,7 +10,7 @@ export interface RedisEnvInterface {
 
 export interface MongoDBEnvInterface {
     uri: string,
-    port: number,
+    port: string,
     database: string
 }
 

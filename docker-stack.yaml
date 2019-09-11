@@ -1,18 +1,57 @@
 version: "3"
 services:
-  serviceA:
-    image: eliudarudo/simple-events-service-a:v1.10
+  mongodb:
+    image: mongo:3.4.0
+    ports:
+      - "27017:27017"
+  redis:
+    image: redis:5.0.4
+    ports:
+      - "6379"
+# consuming services have to have keywords based on the
+# 'task-maps.json' file
+  consumingFrontend:
+    image: eliudarudo/events-communication-frontend:dev
+    ports:
+      - "4000:4000"
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       replicas: 1  
       restart_policy: 
         condition: on-failure
-  serviceB:
-    image: eliudarudo/simple-events-service-b:v1.10
+    environment:
+      - PORT=4000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - EVENT_SERVICE_EVENT=Event_Service
+      - CONSUMING_SERVICE_EVENT=Consuming_Service
+  eventService:
+    image: eliudarudo/events-communication-events:dev
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      replicas: 1  
+      restart_policy: 
+        condition: on-failure
+    environment:
+      - MONGOURI=mongodb
+      - MONGOPORT=27017
+      - MONGODATABASE=test
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - EVENT_SERVICE_EVENT=Event_Service
+      - CONSUMING_SERVICE_EVENT=Consuming_Service  
+  consumingBackend:
+    image: eliudarudo/events-communication-backend:dev
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       replicas: 3  
       restart_policy: 
-        condition: on-failure      
+        condition: on-failure   
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - EVENT_SERVICE_EVENT=Event_Service
+
