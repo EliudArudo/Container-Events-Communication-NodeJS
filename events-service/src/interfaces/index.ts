@@ -25,11 +25,13 @@ export interface TaskInterface {
     subtask: SUB_TASK_TYPE,
     containerId: string,
     service: string,
+    requestId: string,
     requestBody: string // JSON
 }
 
 
 export interface EventInterface {
+    requestId?: string,
     containerId: string,
     service: string,
 
@@ -68,6 +70,7 @@ export interface InitialisedRecordInfoInterface {
 }
 
 export interface MongoDBTaskSchemaInterface {
+    fromRequestId: string,
     fromContainerId: string,
     fromContainerService: string,
     fromReceivedTime: Date,

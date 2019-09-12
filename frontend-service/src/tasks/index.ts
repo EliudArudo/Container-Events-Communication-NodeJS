@@ -1,9 +1,13 @@
+import * as UniqueID from 'uniqid'
+
 import { ContainerInfo } from "../docker-api"
 import { redisPublisher } from './../initialise/redis'
 import { EventService } from "../env"
 import { RedisClient } from "redis"
-import { ContainerInfoInterface, TaskInterface, TASK_TYPE, SUB_TASK_TYPE } from "../interfaces"
+import { ContainerInfoInterface, TaskInterface, TASK_TYPE, SUB_TASK_TYPE, ReceivedEventInterface } from "../interfaces"
 import { logStatusFileMessage } from "../log"
+import { getResponseFromBuffer, responseBuffer } from '../util'
+
 /*
   ADD takes { a1, a2 }
   MULTIPLY takes { m1, m2 }
@@ -79,11 +83,14 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
         const myContainerInfo: ContainerInfoInterface =
             await containerInfo.fetchContainerInfo()
 
+        const requestId = UniqueID()
+
         const exportTask: TaskInterface = {
             task,
             subtask,
             containerId: myContainerInfo.id,
             service: myContainerInfo.service,
+            requestId,
             requestBody: JSON.stringify(requestBody)
         }
         return exportTask
@@ -102,11 +109,41 @@ function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: Re
     functionRedisPublisher.publish(EventService, JSON.stringify(task))
 }
 
-export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<void> {
+
+function setTimeoutAsync(time: number): Promise<any> {
+    return new Promise(resolve => {
+        setTimeout(_ => resolve(), time)
+    })
+}
+
+async function waitForResult(requestId: string): Promise<any> {
     try {
-        const task = await TaskDeterminer(requestBody, containerInfo)
+        await setTimeoutAsync(1000)
+        let response: ReceivedEventInterface = getResponseFromBuffer(requestId)
+
+        if (!response)
+            response = await waitForResult(requestId)
+
+        return response.responseBody
+
+    } catch (e) {
+        logStatusFileMessage(
+            'Failure',
+            FILENAME,
+            'waitForResult',
+            `Failed to wait for result with error: 
+             e:${e}`)
+    }
+}
+
+export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<any> {
+    try {
+        const task: TaskInterface = await TaskDeterminer(requestBody, containerInfo)
         sendTaskToEventsService(task, redisPublisher)
 
+        const response = await waitForResult(task.requestId)
+
+        return response
     } catch (e) {
         logStatusFileMessage(
             'Failure',

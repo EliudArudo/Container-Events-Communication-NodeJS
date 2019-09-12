@@ -7,17 +7,28 @@ import { logStatusFileMessage } from "../log";
 
 const FILENAME = 'logic/index.ts'
 
+
 export async function EventDeterminer(sentEvent: string): Promise<void> {
     try {
+
         const event: EventInterface = JSON.parse(sentEvent)
 
         const offlineContainerInfo: ContainerInfoInterface = DockerAPI.fetchOfflineContainerInfo();
         const eventIsOurs = event.serviceContainerId === offlineContainerInfo.id &&
             event.serviceContainerService === offlineContainerInfo.service
 
-        const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
-            event.requestBody ? 'TASK' :
+        let taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
+            event.requestId ? 'TASK' :
                 null
+
+        /// Clearing glitch
+        if (!taskType) {
+            event.responseBody = event.requestBody
+            event.requestBody = null
+            taskType = 'RESPONSE'
+        }
+        /// Clearing glitch
+
 
         const isResponseEvent = taskType === 'RESPONSE'
 
@@ -41,8 +52,9 @@ export async function EventDeterminer(sentEvent: string): Promise<void> {
 
 function getParsedResponseInfo(task: EventInterface, existingRecordInfo: InitialisedRecordInfoInterface): EventInterface {
     const parsedResponseInfo: EventInterface = {
+        requestId: task.requestId,
         containerId: task.containerId,
-        service: task.subtask,
+        service: task.service,
         responseBody: existingRecordInfo.responseBody
     }
 
@@ -52,7 +64,7 @@ function getParsedResponseInfo(task: EventInterface, existingRecordInfo: Initial
 async function recordAndAllocateTask(task: EventInterface): Promise<void> {
     try {
         const initRecordInfo: InitialisedRecordInfoInterface = await recordNewTaskInDB(task)
-        if (initRecordInfo!.existing) {
+        if (initRecordInfo && initRecordInfo.existing) {
             const responseInfo: EventInterface = getParsedResponseInfo(task, initRecordInfo)
             sendEventToContainer(responseInfo)
             return
@@ -65,11 +77,13 @@ async function recordAndAllocateTask(task: EventInterface): Promise<void> {
             'Failure',
             FILENAME,
             'recordAndAllocateTask',
-            `failed to get initRecordInfo`)
+            `failed to get initRecordInfo with error:
+            ${e}`)
     }
 }
 
 async function modifyDatabaseAndSendBackResponse(response: EventInterface): Promise<void> {
+
     try {
         const responseInfo: EventInterface = await completeExistingTaskRecordInDB(response)
         sendEventToContainer(responseInfo)

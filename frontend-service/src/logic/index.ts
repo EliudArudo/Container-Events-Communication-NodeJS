@@ -4,6 +4,7 @@ import { ReceivedEventInterface, EventTaskType, ContainerInfoInterface } from ".
 import { logStatusFileMessage } from "../log";
 import { redisPublisher } from "../initialise/redis";
 import { EventService } from './../env/index'
+import { pushResponseToBuffers } from "../util";
 
 const FILENAME = 'logic/index.ts'
 
@@ -68,6 +69,8 @@ function returnResponse(response: ReceivedEventInterface): void {
         FILENAME,
         'returnResponse',
         `Return this to the user :${JSON.stringify(response)}`)
+
+    pushResponseToBuffers(response)
 }
 
 // LOGIC - Dev Logic

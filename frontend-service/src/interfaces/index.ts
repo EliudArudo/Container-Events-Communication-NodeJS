@@ -17,11 +17,13 @@ export interface TaskInterface {
     subtask: SUB_TASK_TYPE,
     containerId: string,
     service: string,
+    requestId: string,
     requestBody: string // JSON
 }
 
 
 export interface ReceivedEventInterface {
+    requestId?: string,
     containerId: string,
     service: string,
 
