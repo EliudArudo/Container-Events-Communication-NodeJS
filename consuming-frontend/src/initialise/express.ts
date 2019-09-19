@@ -2,9 +2,7 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { ExpressPort } from '../env'
-import { containerInfo } from './docker-api'
 import { indexController, requestRouteController, _404RouterHandler } from '../controllers'
-import { ContainerInfoInterface } from '../interfaces'
 import { logStatusFileMessage } from '../log'
 const app = express()
 

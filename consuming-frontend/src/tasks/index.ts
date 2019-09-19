@@ -17,6 +17,8 @@ import { getResponseFromBuffer, responseBuffer } from '../util'
 
 const FILENAME = 'tasks/index.ts'
 
+const WAITINGTIMEFORRESPONSE: number = 10
+
 function DetermineTask(requestBody: any): TASK_TYPE {
     let task: TASK_TYPE
     let isString: boolean
@@ -85,13 +87,18 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
 
         const requestId = UniqueID()
 
+        // -> Event container chooser
+        const chosenContainer: ContainerInfoInterface = await containerInfo.fetchEventContainer()
+
         const exportTask: TaskInterface = {
             task,
             subtask,
             containerId: myContainerInfo.id,
             service: myContainerInfo.service,
             requestId,
-            requestBody: JSON.stringify(requestBody)
+            requestBody: JSON.stringify(requestBody),
+            serviceContainerId: chosenContainer.id,
+            serviceContainerService: chosenContainer.service
         }
         return exportTask
         // Determiner chunk here
@@ -118,11 +125,16 @@ function setTimeoutAsync(time: number): Promise<any> {
 
 async function waitForResult(requestId: string): Promise<any> {
     try {
-        await setTimeoutAsync(1000)
+
         let response: ReceivedEventInterface = getResponseFromBuffer(requestId)
 
-        if (!response)
-            response = await waitForResult(requestId)
+        // if (!response || !response.responseBody)
+        //     response = await waitForResult(requestId)
+
+        while (!response || !response.responseBody) {
+            await setTimeoutAsync(WAITINGTIMEFORRESPONSE)
+            response = getResponseFromBuffer(requestId)
+        }
 
         return response.responseBody
 

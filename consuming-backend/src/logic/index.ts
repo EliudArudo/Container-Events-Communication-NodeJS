@@ -4,31 +4,45 @@ import { ReceivedEventInterface, EventTaskType, ContainerInfoInterface } from ".
 import { logStatusFileMessage } from "../log";
 import { redisPublisher } from "../initialise/redis";
 import { EventService } from './../env/index'
-import { pushResponseToBuffers } from "../util";
 
 const FILENAME = 'logic/index.ts'
 
-export function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): void {
-    const event: ReceivedEventInterface = JSON.parse(sentEvent)
+export async function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): Promise<void> {
 
-    const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo();
-    const eventIsOurs = event.containerId === offlineContainerInfo.id &&
-        event.service === offlineContainerInfo.service
+    try {
+        const event: ReceivedEventInterface = JSON.parse(sentEvent)
 
-    const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
-        event.requestBody ? 'TASK' :
-            null
+        const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo()
+        const eventIsOurs = event.containerId === offlineContainerInfo.id &&
+            event.service === offlineContainerInfo.service
 
-    if (!eventIsOurs)
-        return
+        const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
+            event.requestBody ? 'TASK' :
+                null
 
-    switch (taskType) {
-        case 'TASK':
-            performTaskAndRespond(event)
-            break;
-        case 'RESPONSE':
-            returnResponse(event)
-            break;
+        if (!eventIsOurs)
+            return
+
+        /*
+          Should always receive tasks, but leaving 'RESPONSE' here ensures that
+          backend services can be abrtracted further down, send tasks and get response
+        */
+
+        switch (taskType) {
+            case 'TASK':
+                performTaskAndRespond(event)
+                break;
+            case 'RESPONSE':
+                returnResponse(event)
+                break;
+        }
+
+    } catch (e) {
+        logStatusFileMessage(
+            'Failure',
+            FILENAME,
+            'EventDeterminer',
+            `Failed to determing type of event:${e}`)
     }
 }
 
@@ -42,7 +56,7 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
         serviceContainerService
     } = task
 
-    const requestBody = JSON.stringify(results)
+    const responseBody = JSON.stringify(results)
 
     const event: ReceivedEventInterface = {
         containerId,
@@ -50,7 +64,7 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
         recordId,
         serviceContainerId,
         serviceContainerService,
-        requestBody
+        responseBody
     }
 
     const stringifiedEvents: string = JSON.stringify(event)
@@ -64,14 +78,14 @@ function performTaskAndRespond(task: ReceivedEventInterface): void {
 }
 
 function returnResponse(response: ReceivedEventInterface): void {
+    // Perform logic from here based on returned response
     logStatusFileMessage(
         'Success',
         FILENAME,
         'returnResponse',
         `Return this to the user :${JSON.stringify(response)}`)
-
-    pushResponseToBuffers(response)
 }
+
 
 // LOGIC - Dev Logic
 function performLogic(task: ReceivedEventInterface): any {

@@ -1,4 +1,3 @@
-
 import { EventInterface, ContainerInfoInterface, ParsedContainerInterface } from '../interfaces';
 import { DockerAPI } from '../docker-api';
 import { logStatusFileMessage } from '../log';

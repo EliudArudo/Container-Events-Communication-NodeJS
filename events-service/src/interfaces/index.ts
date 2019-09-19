@@ -25,7 +25,7 @@ export interface TaskInterface {
     subtask: SUB_TASK_TYPE,
     containerId: string,
     service: string,
-    requestId: string,
+    requestId?: string,
     requestBody: string // JSON
 }
 

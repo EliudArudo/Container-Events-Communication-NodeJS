@@ -2,6 +2,7 @@ import * as os from 'os'
 import { Docker } from 'node-docker-api'
 import { ContainerInfoInterface } from '../interfaces'
 import { logStatusFileMessage } from '../log'
+import { getSelectedEventContainerIdAndService } from '../util'
 
 const FILENAME = 'src/docker-api/index'
 
@@ -43,6 +44,42 @@ export class ContainerInfo {
         }
 
         return containerInfo
+    }
+
+    public async fetchEventContainer(): Promise<ContainerInfoInterface> {
+        try {
+
+            const selectedEventContainer: ContainerInfoInterface = await getSelectedEventContainerIdAndService()
+
+            return selectedEventContainer
+
+        } catch (e) {
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'initialise',
+                `failed to initialise`)
+        }
+    }
+
+    public async getFreshContainers(): Promise<Array<ContainerInfoInterface>> {
+        try {
+            const containerArray = await this.getDockerContainerList()
+
+            if (!containerArray)
+                throw new Error('getFreshContainers: No containers to parse')
+
+            const parsedContainers: Array<ContainerInfoInterface> = this.getParsedContainers(containerArray)
+
+            return parsedContainers
+
+        } catch (e) {
+            logStatusFileMessage(
+                'Failure',
+                FILENAME,
+                'getFreshContainers',
+                `failed to fetch fresh container arrays`)
+        }
     }
 
     private async initialise(): Promise<void> {
@@ -103,4 +140,22 @@ export class ContainerInfo {
                 `failed to update info based on container array`)
         }
     }
+
+    private getParsedContainers(containerArray): Array<ContainerInfoInterface> {
+        let parsedContainers: Array<ContainerInfoInterface> = []
+        if (!containerArray || !Array.isArray(containerArray) || (Array.isArray(containerArray) && containerArray.length === 0))
+            throw new Error('getParsedContainers: No containers brought in')
+
+        for (const container of containerArray) {
+            const parseContainerInfo: ContainerInfoInterface = {
+                id: container.data.Id,
+                service: container.data.Labels['com.docker.swarm.service.name']
+            }
+
+            parsedContainers.push(parseContainerInfo)
+        }
+
+        return parsedContainers
+    }
+
 }

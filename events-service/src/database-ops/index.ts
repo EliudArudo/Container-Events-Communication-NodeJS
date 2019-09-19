@@ -284,11 +284,6 @@ export async function completeRecordInDB(funcResponse: EventInterface, receivedT
 export async function completeExistingTaskRecordInDB(funcResponse: EventInterface): Promise<EventInterface> {
     try {
         const preexistingResponse = await MongoDBResponse.findOne({ response: funcResponse.responseBody })
-        console.log(
-            `
-            preexistingResponse: ${JSON.stringify(preexistingResponse)}
-            `
-        )
         if (!preexistingResponse) {
             const toReceivedTime = new Date()
             const toResponseBodyId: string = await saveNewResponseAndGetID(funcResponse.responseBody)

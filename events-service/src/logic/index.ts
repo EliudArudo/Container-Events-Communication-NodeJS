@@ -14,6 +14,7 @@ export async function EventDeterminer(sentEvent: string): Promise<void> {
         const event: EventInterface = JSON.parse(sentEvent)
 
         const offlineContainerInfo: ContainerInfoInterface = DockerAPI.fetchOfflineContainerInfo();
+
         const eventIsOurs = event.serviceContainerId === offlineContainerInfo.id &&
             event.serviceContainerService === offlineContainerInfo.service
 
@@ -29,10 +30,7 @@ export async function EventDeterminer(sentEvent: string): Promise<void> {
         }
         /// Clearing glitch
 
-
-        const isResponseEvent = taskType === 'RESPONSE'
-
-        if (isResponseEvent && !eventIsOurs)
+        if (!eventIsOurs)
             return
 
         switch (taskType) {

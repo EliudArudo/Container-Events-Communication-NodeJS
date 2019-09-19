@@ -4,40 +4,41 @@ import { ReceivedEventInterface, EventTaskType, ContainerInfoInterface } from ".
 import { logStatusFileMessage } from "../log";
 import { redisPublisher } from "../initialise/redis";
 import { EventService } from './../env/index'
+import { pushResponseToBuffers } from "../util";
 
-const FILENAME = 'logic/index.ts'
+export function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): void {
+    const event: ReceivedEventInterface = JSON.parse(sentEvent)
 
-export async function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): Promise<void> {
+    const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo();
+    const eventIsOurs = event.containerId === offlineContainerInfo.id &&
+        event.service === offlineContainerInfo.service
 
-    try {
-        const event: ReceivedEventInterface = JSON.parse(sentEvent)
+    const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
+        event.requestBody ? 'TASK' :
+            null
 
-        const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo()
-        const eventIsOurs = event.containerId === offlineContainerInfo.id &&
-            event.service === offlineContainerInfo.service
+    /*
+      This makes frontend service containers *taskable
+      -- taskable - means that they can receive tasks, perform tasks and send back to
+        event services
+    */
+    if (!eventIsOurs)
+        return
 
-        const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
-            event.requestBody ? 'TASK' :
-                null
+    switch (taskType) {
+        case 'TASK':
+            performTaskAndRespond(event)
+            break;
+        case 'RESPONSE':
+            /* 
+              Event pushed to response buffers is waited on using 'requestId' as identifier
+              - Use this function to wait for result, http and even Web Sockets
+              as in tasks/index.ts -> TaskController function
 
-        if (!eventIsOurs)
-            return
-
-        switch (taskType) {
-            case 'TASK':
-                performTaskAndRespond(event)
-                break;
-            case 'RESPONSE':
-                returnResponse(event)
-                break;
-        }
-
-    } catch (e) {
-        logStatusFileMessage(
-            'Failure',
-            FILENAME,
-            'EventDeterminer',
-            `Failed to determing type of event:${e}`)
+              const response = await waitForResult(task.requestId)
+            */
+            pushResponseToBuffers(event)
+            break;
     }
 }
 
@@ -51,7 +52,7 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
         serviceContainerService
     } = task
 
-    const responseBody = JSON.stringify(results)
+    const requestBody = JSON.stringify(results)
 
     const event: ReceivedEventInterface = {
         containerId,
@@ -59,7 +60,7 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
         recordId,
         serviceContainerId,
         serviceContainerService,
-        responseBody
+        requestBody
     }
 
     const stringifiedEvents: string = JSON.stringify(event)
@@ -72,16 +73,7 @@ function performTaskAndRespond(task: ReceivedEventInterface): void {
     sendResultsToEventService(task, results)
 }
 
-function returnResponse(response: ReceivedEventInterface): void {
-    logStatusFileMessage(
-        'Success',
-        FILENAME,
-        'returnResponse',
-        `Return this to the user :${JSON.stringify(response)}`)
-}
-
-
-// LOGIC - Dev Logic
+// LOGIC - Development Logic
 function performLogic(task: ReceivedEventInterface): any {
     let result: any
     const data = JSON.parse(task.requestBody)

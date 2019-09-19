@@ -10,8 +10,8 @@ services:
       - "6379"
 # consuming services have to have keywords based on the
 # 'task-maps.json' file
-  consumingFrontend:
-    image: eliudarudo/events-communication-frontend:dev
+  consuming-frontend:
+    image: eliudarudo/events-communication-consuming-frontend:dev
     ports:
       - "4000:4000"
     volumes: 
@@ -26,8 +26,8 @@ services:
       - REDIS_PORT=6379
       - EVENT_SERVICE_EVENT=Event_Service
       - CONSUMING_SERVICE_EVENT=Consuming_Service
-  eventService:
-    image: eliudarudo/events-communication-events:dev
+  event-service:
+    image: eliudarudo/events-communication-event-service:dev
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
@@ -42,8 +42,8 @@ services:
       - REDIS_PORT=6379
       - EVENT_SERVICE_EVENT=Event_Service
       - CONSUMING_SERVICE_EVENT=Consuming_Service  
-  consumingBackend:
-    image: eliudarudo/events-communication-backend:dev
+  consuming-backend:
+    image: eliudarudo/events-communication-consuming-backend:dev
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
