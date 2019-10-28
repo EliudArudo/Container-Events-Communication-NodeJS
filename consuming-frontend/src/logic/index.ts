@@ -7,7 +7,11 @@ import { EventService } from './../env/index'
 import { pushResponseToBuffers } from "../util";
 
 export function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): void {
-    const event: ReceivedEventInterface = JSON.parse(sentEvent)
+    let event: ReceivedEventInterface = JSON.parse(sentEvent)
+
+    if (typeof event === 'string') {
+        event = JSON.parse(event)
+    }
 
     const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo();
     const eventIsOurs = event.containerId === offlineContainerInfo.id &&

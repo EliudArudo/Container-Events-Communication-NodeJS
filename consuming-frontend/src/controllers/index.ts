@@ -6,7 +6,7 @@ import { EventDeterminer } from "../logic"
 const FILENAME = "controllers/index.ts"
 
 export function indexController(req: any, res: any): void {
-    res.send({ message: 'Everything is alright' })
+    res.send({ message: 'OK' })
 }
 
 export function requestRouteController(req: any, res: any): void {

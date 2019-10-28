@@ -128,9 +128,6 @@ async function waitForResult(requestId: string): Promise<any> {
 
         let response: ReceivedEventInterface = getResponseFromBuffer(requestId)
 
-        // if (!response || !response.responseBody)
-        //     response = await waitForResult(requestId)
-
         while (!response || !response.responseBody) {
             await setTimeoutAsync(WAITINGTIMEFORRESPONSE)
             response = getResponseFromBuffer(requestId)

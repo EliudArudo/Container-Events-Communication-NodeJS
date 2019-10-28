@@ -6,7 +6,7 @@
 # docker push eliudarudo/events-communication-event-service:dev
 # docker push eliudarudo/events-communication-consuming-backend:dev
 
-export COLLECTIVE_VERSION=v0.1
+export COLLECTIVE_VERSION=v0.3
 
 docker build -t eliudarudo/events-communication-consuming-frontend:$COLLECTIVE_VERSION -f ../consuming-frontend/Dockerfile ../consuming-frontend
 docker build -t eliudarudo/events-communication-event-service:$COLLECTIVE_VERSION -f ../events-service/Dockerfile ../events-service

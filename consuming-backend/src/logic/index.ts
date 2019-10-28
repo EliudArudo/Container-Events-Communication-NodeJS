@@ -9,40 +9,35 @@ const FILENAME = 'logic/index.ts'
 
 export async function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): Promise<void> {
 
-    try {
-        const event: ReceivedEventInterface = JSON.parse(sentEvent)
+    let event: ReceivedEventInterface = JSON.parse(sentEvent)
 
-        const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo()
-        const eventIsOurs = event.containerId === offlineContainerInfo.id &&
-            event.service === offlineContainerInfo.service
+    if (typeof event === 'string') {
+        event = JSON.parse(event)
+    }
 
-        const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
-            event.requestBody ? 'TASK' :
-                null
+    const offlineContainerInfo: ContainerInfoInterface = functionContainerInfo.fetchOfflineContainerInfo()
+    const eventIsOurs = event.containerId === offlineContainerInfo.id &&
+        event.service === offlineContainerInfo.service
 
-        if (!eventIsOurs)
-            return
+    const taskType: EventTaskType = event.responseBody ? 'RESPONSE' :
+        event.requestBody ? 'TASK' :
+            null
 
-        /*
-          Should always receive tasks, but leaving 'RESPONSE' here ensures that
-          backend services can be abrtracted further down, send tasks and get response
-        */
+    if (!eventIsOurs)
+        return
 
-        switch (taskType) {
-            case 'TASK':
-                performTaskAndRespond(event)
-                break;
-            case 'RESPONSE':
-                returnResponse(event)
-                break;
-        }
+    /*
+      Should always receive tasks, but leaving 'RESPONSE' here ensures that
+      backend services can be abrtracted further down, send tasks and get response
+    */
 
-    } catch (e) {
-        logStatusFileMessage(
-            'Failure',
-            FILENAME,
-            'EventDeterminer',
-            `Failed to determing type of event:${e}`)
+    switch (taskType) {
+        case 'TASK':
+            performTaskAndRespond(event)
+            break;
+        case 'RESPONSE':
+            returnResponse(event)
+            break;
     }
 }
 
