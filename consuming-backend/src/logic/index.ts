@@ -36,7 +36,7 @@ export async function EventDeterminer(sentEvent: string, functionContainerInfo: 
             performTaskAndRespond(event)
             break;
         case 'RESPONSE':
-            returnResponse(event)
+            // Backend not meant to receive any tasks
             break;
     }
 }
@@ -70,15 +70,6 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
 function performTaskAndRespond(task: ReceivedEventInterface): void {
     const results = performLogic(task)
     sendResultsToEventService(task, results)
-}
-
-function returnResponse(response: ReceivedEventInterface): void {
-    // Perform logic from here based on returned response
-    logStatusFileMessage(
-        'Success',
-        FILENAME,
-        'returnResponse',
-        `Return this to the user :${JSON.stringify(response)}`)
 }
 
 
