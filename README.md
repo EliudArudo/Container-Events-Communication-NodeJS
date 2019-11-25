@@ -1,14 +1,20 @@
 ## An Event Based Microservice Architecture
-<a href="/" target="_blank">
-<img class="language-logo" src="images/nodejs.png"/>
-</a>
+<div style="height:80px; 
+            display: inline-flex; 
+            justify-content: center; 
+            align-items: center;">
+<img style="height: 50px;
+            width: auto;
+            margin-right: 20px;
+            "  
+     src="images/nodejs.png"/>
 
-<a href="/">
-<img class="language-logo" src="images/docker.png"/>
-</a>
+<img style="height: 50px;
+            width: auto;"  
+     src="images/docker.png"/>
+</div>
 
 
-<!-- NOTE - ON PUSHING TO GITHUB, CHANGE ALL IMAGE LINKS TO GITHUB -->
 
 ### Table of Contents
 * [Project Overview](#project-overview)
@@ -436,8 +442,8 @@ Please note the text file's path. `test.txt` is used below as an example.
 
 *Tabulated results*
 
-|req           |  req/s |  response time (avg) |
-|--------------|:------:|:--------------------:|
+|    req       |  req/s |  response time (avg) |
+|:-------------|:------:|:--------------------:|
 |   100        |   1    |        44ms          | 
 |   1000       |  10    |        200ms         | 
 |   1000       |  100   |        2.5s          | 
@@ -622,19 +628,3 @@ Your help in these areas will be much appreciated
 - Adding more repos in different server side languages and frameworks
 
 You can reach me through [eliudarudo@gmail.com](mailto:eliudarudo@gmail.com) in case of any inquiries. Thank you 😊.
-
-
-<style>
-/* Restraining language logo size */
-.language-logo {
-    height: 50px;
-    width: auto;
-}
-
-/* Remove outline on focus on clicking image */
-a:active, a:focus {
-  outline: 0;
-  border: none;
-  -moz-outline-style: none;
-}
-</style>
