@@ -7,12 +7,14 @@
             align-items: center;">
 <img style="height: 50px;
             width: auto;
+            max-width: 50px;
             margin-right: 20px;
             "  
      src="images/nodejs.png"/>
 
 <img style="height: 50px;
-            width: auto;"  
+            width: auto;  
+            max-width: 50px;"
      src="images/docker.png"/>
 </div>
 
