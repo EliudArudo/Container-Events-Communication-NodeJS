@@ -1,21 +1,9 @@
 ## An Event Based Microservice Architecture
-<div style="height: 50px;
-            width: 120px; 
-            display: flex; 
-            flex-direction: row;
-            justify-content: center; 
-            align-items: center;">
-<img style="height: 50px;
-            width: auto;
-            max-width: 50px;
-            margin-right: 20px;
-            "  
-     src="images/nodejs.png"/>
+<div style="height: 50px; width: 120px; display: flex; flex-direction: row; justify-content: center; align-items: center;">
 
-<img style="height: 50px;
-            width: auto;  
-            max-width: 50px;"
-     src="images/docker.png"/>
+<img style="height: 50px; width: auto; max-width: 50px; margin-right: 20px;" src="images/nodejs.png"/>
+
+<img style="height: 50px; width: auto; max-width: 50px;" src="images/docker.png"/>
 </div>
 
 
