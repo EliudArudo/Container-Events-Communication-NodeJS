@@ -436,7 +436,7 @@ Please note the text file's path. `test.txt` is used below as an example.
 
 *Tabulated results*
 
-|  req         |  req/s |  response time (avg) |
+|req           |  req/s |  response time (avg) |
 |--------------|:------:|:--------------------:|
 |   100        |   1    |        44ms          | 
 |   1000       |  10    |        200ms         | 
