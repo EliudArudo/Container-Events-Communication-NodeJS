@@ -1,6 +1,8 @@
 ## An Event Based Microservice Architecture
-<div style="height:80px; 
+<div style="height:80px;
+            width: 120px; 
             display: inline-flex; 
+            flex-direction: row;
             justify-content: center; 
             align-items: center;">
 <img style="height: 50px;
