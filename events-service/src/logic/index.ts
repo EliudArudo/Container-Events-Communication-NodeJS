@@ -8,6 +8,9 @@ import { logStatusFileMessage } from "../log";
 const FILENAME = 'logic/index.ts'
 
 
+/*
+  Test
+*/
 export async function EventDeterminer(sentEvent: string): Promise<void> {
 
     let event: EventInterface = JSON.parse(sentEvent)
@@ -47,7 +50,9 @@ export async function EventDeterminer(sentEvent: string): Promise<void> {
     }
 }
 
-
+/*
+  Test
+*/
 function getParsedResponseInfo(task: EventInterface, existingRecordInfo: InitialisedRecordInfoInterface): EventInterface {
     const parsedResponseInfo: EventInterface = {
         requestId: task.requestId,
@@ -59,6 +64,13 @@ function getParsedResponseInfo(task: EventInterface, existingRecordInfo: Initial
     return parsedResponseInfo
 }
 
+/*
+  Test
+   - recordNewTaskInDB called with arguments
+   - getParsedResponseInfo called with arguments if initRecordInfo
+     - sendEventToContainer called at least once
+   - allocateTaskToConsumingContainer called at least once
+*/
 async function recordAndAllocateTask(task: EventInterface): Promise<void> {
     try {
         const initRecordInfo: InitialisedRecordInfoInterface = await recordNewTaskInDB(task)
@@ -81,6 +93,10 @@ async function recordAndAllocateTask(task: EventInterface): Promise<void> {
     }
 }
 
+/*
+  Test
+   - sendEventToContainer called at least once
+*/
 async function modifyDatabaseAndSendBackResponse(response: EventInterface): Promise<void> {
 
     try {
@@ -104,6 +120,9 @@ function sendEventToContainer(eventInfo: EventInterface): void {
 }
 
 // DockerAPI ops
+/*
+  Test
+*/
 function parseEventFromRecordInfo(initRecordInfo: InitialisedRecordInfoInterface): EventInterface {
     const event: EventInterface = {
         containerId: initRecordInfo.chosenContainerId,
@@ -119,8 +138,12 @@ function parseEventFromRecordInfo(initRecordInfo: InitialisedRecordInfoInterface
     return event
 }
 
+/*
+  Test
+   - parseEventFromRecordInfo called with arguments
+   - sendEventToContainer called at least once
+*/
 function allocateTaskToConsumingContainer(initRecordInfo: InitialisedRecordInfoInterface): void {
     const eventToSend: EventInterface = parseEventFromRecordInfo(initRecordInfo)
     sendEventToContainer(eventToSend)
-
 }

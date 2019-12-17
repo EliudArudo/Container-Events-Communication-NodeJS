@@ -10,6 +10,9 @@ import { logStatusFileMessage } from "../log"
 
 const FILENAME = "/database-ops/index.ts"
 
+/*
+   Test
+*/
 async function getExistingRequestDocumentID(request: string): Promise<string> {
     let existingRequestDocumentID: string
     try {
@@ -32,6 +35,9 @@ async function getExistingRequestDocumentID(request: string): Promise<string> {
     }
 }
 
+/*
+   Test
+*/
 async function getExistingTask(task: EventInterface): Promise<Document> {
     let existingRecord: Document
     try {
@@ -60,7 +66,9 @@ async function getExistingTask(task: EventInterface): Promise<Document> {
     }
 }
 
-
+/*
+   Test
+*/
 async function getExistingParsedTask(mongoDBTask: Document): Promise<InitialisedRecordInfoInterface> {
     try {
         const toResponseBodyId = mongoDBTask['toResponseBodyId']
@@ -88,6 +96,9 @@ async function getExistingParsedTask(mongoDBTask: Document): Promise<Initialised
 
 }
 
+/*
+   Test
+*/
 async function getNewParsedTask(mongoDBTask: Document, selectedContainerInfo: ContainerInfoInterface): Promise<InitialisedRecordInfoInterface> {
     const parsedTask: InitialisedRecordInfoInterface = {
         containerId: mongoDBTask['fromContainerId'],
@@ -119,6 +130,9 @@ async function getNewParsedTask(mongoDBTask: Document, selectedContainerInfo: Co
 
 }
 
+/*
+   Test
+*/
 async function saveNewRequestAndGetID(requestBody: string): Promise<string> {
     try {
         const request: Document = await new MongoDBRequest({
@@ -138,7 +152,9 @@ async function saveNewRequestAndGetID(requestBody: string): Promise<string> {
     }
 }
 
-
+/*
+   Test
+*/
 async function recordNewInitialisedTaskWithRequestId(funcTask: EventInterface, requestBodyId: string): Promise<InitialisedRecordInfoInterface> {
     try {
         const fromRequestId = funcTask.requestId
@@ -187,6 +203,9 @@ async function recordNewInitialisedTaskWithRequestId(funcTask: EventInterface, r
     }
 }
 
+/*
+   Test
+*/
 async function recordNewTaskAndRequest(funcTask: EventInterface): Promise<InitialisedRecordInfoInterface> {
     try {
         const requestBodyId: string = await saveNewRequestAndGetID(funcTask.requestBody)
@@ -205,6 +224,9 @@ async function recordNewTaskAndRequest(funcTask: EventInterface): Promise<Initia
     }
 }
 
+/*
+   Test
+*/
 export async function recordNewTaskInDB(task: EventInterface): Promise<InitialisedRecordInfoInterface> {
     try {
 
@@ -231,6 +253,9 @@ export async function recordNewTaskInDB(task: EventInterface): Promise<Initialis
     }
 }
 
+/*
+   Test
+*/
 export function getParsedResponse(funcResponse: EventInterface, oldTask: Document): EventInterface {
     const response: EventInterface = {
         requestId: oldTask['fromRequestId'],
@@ -242,6 +267,9 @@ export function getParsedResponse(funcResponse: EventInterface, oldTask: Documen
     return response
 }
 
+/*
+   Test
+*/
 async function saveNewResponseAndGetID(responseBody: string): Promise<string> {
     try {
         const response: Document = await new MongoDBResponse({
@@ -281,6 +309,9 @@ export async function completeRecordInDB(funcResponse: EventInterface, receivedT
     }
 }
 
+/*
+   Test
+*/
 export async function completeExistingTaskRecordInDB(funcResponse: EventInterface): Promise<EventInterface> {
     try {
         const preexistingResponse = await MongoDBResponse.findOne({ response: funcResponse.responseBody })

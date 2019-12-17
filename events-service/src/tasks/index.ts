@@ -13,6 +13,9 @@ import { DockerAPI } from '../docker-api'
 
 const FILENAME = 'tasks/index.ts'
 
+/*
+  Test
+*/
 function DetermineTask(requestBody: any): TASK_TYPE {
     let task: TASK_TYPE
     let isString: boolean
@@ -31,6 +34,10 @@ function DetermineTask(requestBody: any): TASK_TYPE {
     return task
 }
 
+
+/*
+  Test
+*/
 function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
     const task: TASK_TYPE = DetermineTask(requestBody)
     let subtask: SUB_TASK_TYPE;
@@ -66,6 +73,10 @@ function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
 
 }
 
+
+/*
+  Test
+*/
 async function TaskDeterminer(requestBody: any): Promise<TaskInterface> {
 
     try {
@@ -103,6 +114,11 @@ function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: Re
     functionRedisPublisher.publish(EventService, JSON.stringify(task))
 }
 
+
+/*
+  Test
+   - sendTaskToEventsService called at least once
+*/
 export async function TaskController(requestBody: any): Promise<void> {
     try {
         const task = await TaskDeterminer(requestBody)

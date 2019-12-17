@@ -12,6 +12,10 @@ export class ContainerInfo {
 
     constructor() { }
 
+    /*
+    Test
+    - initialise called at least once
+    */
     public async fetchContainerInfo(): Promise<ContainerInfoInterface> {
         try {
             await this.initialise()
@@ -45,6 +49,11 @@ export class ContainerInfo {
         return containerInfo
     }
 
+    /*
+    Test
+      - getDockerContainerList called at least once
+      - setContainerInfoUsingContainerArray called with arguments
+    */
     private async initialise(): Promise<void> {
         try {
             const containerArray = await this.getDockerContainerList()

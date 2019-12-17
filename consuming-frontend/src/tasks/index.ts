@@ -19,6 +19,10 @@ const FILENAME = 'tasks/index.ts'
 
 const WAITINGTIMEFORRESPONSE: number = 10
 
+/*
+   Test
+     - task determined properly
+*/
 function DetermineTask(requestBody: any): TASK_TYPE {
     let task: TASK_TYPE
     let isString: boolean
@@ -37,6 +41,10 @@ function DetermineTask(requestBody: any): TASK_TYPE {
     return task
 }
 
+/*
+   Test
+     - sub-task determined properly
+*/
 function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
     const task: TASK_TYPE = DetermineTask(requestBody)
     let subtask: SUB_TASK_TYPE;
@@ -72,6 +80,10 @@ function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
 
 }
 
+/*
+   Test
+     - Task determined properly
+*/
 async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): Promise<TaskInterface> {
 
     try {
@@ -123,6 +135,9 @@ function setTimeoutAsync(time: number): Promise<any> {
     })
 }
 
+/*
+   Test
+*/
 async function waitForResult(requestId: string): Promise<any> {
     try {
 
@@ -145,6 +160,9 @@ async function waitForResult(requestId: string): Promise<any> {
     }
 }
 
+/*
+   Test
+*/
 export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<any> {
     try {
         const task: TaskInterface = await TaskDeterminer(requestBody, containerInfo)

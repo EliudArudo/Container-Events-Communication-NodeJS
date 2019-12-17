@@ -13,6 +13,9 @@ import { logStatusFileMessage } from "../log"
 
 const FILENAME = 'tasks/index.ts'
 
+/*
+   Test
+*/
 function DetermineTask(requestBody: any): TASK_TYPE {
     let task: TASK_TYPE
     let isString: boolean
@@ -31,6 +34,9 @@ function DetermineTask(requestBody: any): TASK_TYPE {
     return task
 }
 
+/*
+   Test
+*/
 function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
     const task: TASK_TYPE = DetermineTask(requestBody)
     let subtask: SUB_TASK_TYPE;
@@ -66,6 +72,9 @@ function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
 
 }
 
+/*
+   Test
+*/
 async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): Promise<TaskInterface> {
 
     try {
@@ -99,10 +108,17 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
 
 }
 
+/* 
+  - functionRedisPublisher called with arguments
+*/
 function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: RedisClient): void {
     functionRedisPublisher.publish(EventService, JSON.stringify(task))
 }
 
+/*
+   Test
+   - sendTaskToEventsService is called
+*/
 export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<void> {
     try {
         const task = await TaskDeterminer(requestBody, containerInfo)

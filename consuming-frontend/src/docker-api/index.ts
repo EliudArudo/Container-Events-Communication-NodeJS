@@ -13,6 +13,10 @@ export class ContainerInfo {
 
     constructor() { }
 
+    /*
+    Test
+    - initialise called at least once
+    */
     public async fetchContainerInfo(): Promise<ContainerInfoInterface> {
         try {
             await this.initialise()
@@ -46,6 +50,7 @@ export class ContainerInfo {
         return containerInfo
     }
 
+
     public async fetchEventContainer(): Promise<ContainerInfoInterface> {
         try {
 
@@ -61,6 +66,7 @@ export class ContainerInfo {
                 `failed to initialise`)
         }
     }
+
 
     public async getFreshContainers(): Promise<Array<ContainerInfoInterface>> {
         try {
@@ -82,6 +88,11 @@ export class ContainerInfo {
         }
     }
 
+    /*
+    Test
+    - getDockerContainerList called at least once
+    - setContainerInfoUsingContainerArray called with arguments
+    */
     private async initialise(): Promise<void> {
         try {
             const containerArray = await this.getDockerContainerList()
@@ -141,6 +152,10 @@ export class ContainerInfo {
         }
     }
 
+    /*
+      Test
+        - returns correctly parsedContainers
+    */
     private getParsedContainers(containerArray): Array<ContainerInfoInterface> {
         let parsedContainers: Array<ContainerInfoInterface> = []
         if (!containerArray || !Array.isArray(containerArray) || (Array.isArray(containerArray) && containerArray.length === 0))

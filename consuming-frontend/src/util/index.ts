@@ -18,6 +18,11 @@ function clearResponseFromBuffers(response: ReceivedEventInterface): void {
     responses = responses.filter(res => JSON.stringify(res) != JSON.stringify(response))
 }
 
+/*
+   Test
+    - id pushed to buffer
+    - clearResponseFromBuffers called at least once on id being found
+*/
 export function getResponseFromBuffer(requestId: string): ReceivedEventInterface {
     const responseArrived: boolean = responseBuffer
         .findIndex((res: string) => res === requestId) >= 0
@@ -32,7 +37,10 @@ export function getResponseFromBuffer(requestId: string): ReceivedEventInterface
     return response
 }
 
-
+/*
+  Test
+    - containerInfo.getFreshContainers() called at least once
+*/
 export async function getSelectedEventContainerIdAndService(): Promise<ContainerInfoInterface> {
     try {
         const containerInfo = new ContainerInfo

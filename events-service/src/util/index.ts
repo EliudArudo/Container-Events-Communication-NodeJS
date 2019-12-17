@@ -6,6 +6,10 @@ const TaskMaps = require("../tasks/task-maps.json")
 
 const FILENAME = 'util/index.ts'
 
+/*
+  Test
+   - containerInfo.getFreshContainers() called at least once
+*/
 export async function getSelectedContainerIdAndService(task: EventInterface): Promise<ContainerInfoInterface> {
 
     try {
