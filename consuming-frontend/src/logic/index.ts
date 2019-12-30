@@ -6,10 +6,7 @@ import { redisPublisher } from "../initialise/redis";
 import { EventService } from './../env/index'
 import { pushResponseToBuffers } from "../util";
 
-/*
-   Test
-     - pushResponseToBuffers is called if it's a response
-*/
+
 export function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): void {
     let event: ReceivedEventInterface = JSON.parse(sentEvent)
 
