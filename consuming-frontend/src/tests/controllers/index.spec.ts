@@ -3,10 +3,22 @@ import * as sinon from 'sinon'
 
 const expect = chai.expect
 
-import { indexController, _404RouterHandler, redisController } from '../../controllers/index'
+import {
+    indexController,
+    _404RouterHandler,
+    redisController,
+    requestRouteController
+} from '../../controllers/index'
 
 import * as logic from './../../logic/index'
+import * as tasks from './../../tasks/index'
+
 import { ContainerInfo } from '../../docker-api'
+
+import * as logging from './../../log/index'
+
+// Ensures logStatusFileMessage is not called
+const loggingMock = sinon.stub(logging, 'logStatusFileMessage')
 
 
 describe("smoke test", function () {
@@ -35,6 +47,78 @@ describe("controllers -> indexController", function () {
 })
 
 
+describe("controllers -> requestRouteController", function () {
+    // Using stubs for test doubles
+    let TaskControllerStub: sinon.SinonStub
+    let res: any
+    let req: any
+
+    beforeEach(function () {
+        TaskControllerStub = sinon.stub(tasks, 'TaskController')
+
+        req = {
+            body: '{ "a1": 5, "a2": 10}'
+        }
+
+        res = {
+            send: sinon.spy()
+        }
+    })
+
+    afterEach(function () {
+        if (TaskControllerStub)
+            TaskControllerStub.restore()
+    })
+
+    it("should call TaskController at least once", async function () {
+        TaskControllerStub.resolves('')
+
+        res = {
+            status: function () {
+                return {
+                    send: function () { }
+                }
+            }
+        }
+
+        await requestRouteController(req, res)
+        expect(TaskControllerStub.calledOnce).to.be.true
+
+        TaskControllerStub.restore()
+    })
+
+    it("should call res.send with result if TaskController threw no error", async function () {
+        TaskControllerStub.resolves('')
+
+        await requestRouteController(req, res)
+        expect(res.send.calledOnce).to.be.true
+
+    })
+
+    it("should receive status of 500 when TaskController throws error", async function () {
+        // TaskControllerStub.rejects('Error')
+
+        // res = {
+        //     status: function () { }
+        // }
+
+        // let statusStub = sinon.stub(res, 'status').returns({ send: function () { } })
+
+        // try {
+        //     await requestRouteController(req, res)
+        // } catch (e) {
+        //     throw (e)
+        // } finally {
+        //     expect(statusStub.calledOnce).to.be.equal(500)
+
+        // }
+
+        // // expect(resStatusStub.firstCall.args[0]).to.be.equal(500)
+    })
+
+})
+
+
 describe("controllers -> _404RouterHandler", function () {
     it("should return status 404", function () {
         let err = {}
@@ -57,14 +141,16 @@ describe("controllers -> _404RouterHandler", function () {
 
 
 describe("controllers -> redisController", function () {
-    // USING TEST DOUBLES!!!!!
+    // using Spies for test doubles
     let dummyContainerInfo: ContainerInfo
 
     let dummySentEvent: string
 
-    let EventDeterminerStub = sinon.stub(logic, 'EventDeterminer')
+    let EventDeterminerStub: any
 
     beforeEach(function () {
+        EventDeterminerStub = sinon.stub(logic, 'EventDeterminer')
+
         dummyContainerInfo = {
             fetchOfflineContainerInfo: function () {
                 return { id: '' }
@@ -75,7 +161,8 @@ describe("controllers -> redisController", function () {
     })
 
     afterEach(function () {
-        EventDeterminerStub.restore()
+        if (EventDeterminerStub)
+            EventDeterminerStub.restore()
     })
 
 
