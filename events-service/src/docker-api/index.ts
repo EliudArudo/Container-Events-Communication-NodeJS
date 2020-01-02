@@ -13,11 +13,6 @@ export class DockerAPI {
 
     constructor() { }
 
-    /*
-    Test
-    - getDockerContainerList called at least once
-    - setContainerInfoUsingContainerArray called with arguments
-    */
     private static async initialise(): Promise<void> {
         try {
             const infoWasAlreadyInitialised = this.id && this.service
@@ -38,10 +33,6 @@ export class DockerAPI {
         }
     }
 
-    /*
-      Test
-       - initialise is called at least once
-    */
     public static async fetchContainerInfo(): Promise<ContainerInfoInterface> {
         try {
             await this.initialise()
@@ -74,12 +65,6 @@ export class DockerAPI {
         return containerInfo
     }
 
-    /*
-      Test
-       - getDockerContainerList called at least once
-       - getParsedContainers called with certain arguments
-       - parsedContainers are the right containers
-    */
     public static async getFreshContainers(): Promise<Array<ParsedContainerInterface>> {
         try {
             const containerArray = await this.getDockerContainerList()
@@ -116,9 +101,6 @@ export class DockerAPI {
         }
     }
 
-    /*
-    Test
-    */
     private static getParsedContainers(containerArray): Array<ParsedContainerInterface> {
         let parsedContainers: Array<ParsedContainerInterface> = []
         if (!containerArray || !Array.isArray(containerArray) || (Array.isArray(containerArray) && containerArray.length === 0))

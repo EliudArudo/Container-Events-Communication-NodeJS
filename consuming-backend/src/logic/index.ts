@@ -7,11 +7,6 @@ import { EventService } from './../env/index'
 
 const FILENAME = 'logic/index.ts'
 
-/*
-   Test
-     - Response returns null
-     - Task calls performTaskAndRespond() function
-*/
 export async function EventDeterminer(sentEvent: string, functionContainerInfo: ContainerInfo): Promise<void> {
 
     let event: ReceivedEventInterface = JSON.parse(sentEvent)
@@ -72,11 +67,6 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
     redisPublisher.publish(EventService, stringifiedEvents)
 }
 
-/*
-   Test
-     - performLogic is called at least once
-     - sendResultsToEventService is called at least once
-*/
 function performTaskAndRespond(task: ReceivedEventInterface): void {
     const results = performLogic(task)
     sendResultsToEventService(task, results)
@@ -84,9 +74,7 @@ function performTaskAndRespond(task: ReceivedEventInterface): void {
 
 
 // LOGIC - Dev Logic
-/*
-   Test
-*/
+
 function performLogic(task: ReceivedEventInterface): any {
     let result: any
     const data = JSON.parse(task.requestBody)
@@ -110,41 +98,31 @@ function performLogic(task: ReceivedEventInterface): any {
     return result
 }
 
-/*
-   Test
-*/
+
 function devAddStrings(string1: string, string2: string): string {
     const concatString = string1 + string2
     return concatString
 }
 
-/*
-   Test
-*/
+
 function devAddNumber(number1: number, number2: number): number {
     const addedNumber = number1 + number2
     return addedNumber
 }
 
-/*
-   Test
-*/
+
 function devSubtractNumber(number1: number, number2: number): number {
     const subtractedNumber = number1 - number2
     return subtractedNumber
 }
 
-/*
-   Test
-*/
+
 function devMultiplyNumber(number1: number, number2: number): number {
     const multipliedNumber = number1 * number2
     return multipliedNumber
 }
 
-/*
-   Test
-*/
+
 function devDivideNumber(number1: number, number2: number): number {
     const dividedNumber = number1 / number2
     return dividedNumber
