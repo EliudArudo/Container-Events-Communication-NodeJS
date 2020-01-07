@@ -72,7 +72,6 @@ export function DetermineSubTask(task: TASK_TYPE, requestBody: any): SUB_TASK_TY
 }
 
 
-/* Continue from here */
 export async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): Promise<TaskInterface> {
 
     try {
@@ -101,6 +100,7 @@ export async function TaskDeterminer(requestBody: any, containerInfo: ContainerI
             serviceContainerId: chosenContainer.id,
             serviceContainerService: chosenContainer.service
         }
+
         return exportTask
         // Determiner chunk here
     } catch (e) {

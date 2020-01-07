@@ -1,9 +1,12 @@
+import * as os from 'os'
 import * as chai from 'chai'
 import * as sinon from 'sinon'
 
-import { DetermineTask, DetermineSubTask, TaskDeterminer } from '../../tasks/index'
+import * as Tasks from '../../tasks/index'
+import * as Util from '../../util/index'
 
 import { TASK_TYPE, SUB_TASK_TYPE } from '../../interfaces/index'
+import { ContainerInfo } from '../../docker-api'
 
 const expect = chai.expect
 const assert = chai.assert
@@ -15,6 +18,7 @@ const numbersSubtractRequestBody = { s1: 3, s2: 4 }
 const numbersMultiplyRequestBody = { m1: 3, m2: 4 }
 const numbersDivideRequestBody = { d1: 3, d2: 4 }
 const emptyRequestBody = {}
+const invalidRequestBody = ''
 
 const NUMBER_TASK_TYPE: TASK_TYPE = 'NUMBER'
 const STRING_TASK_TYPE: TASK_TYPE = 'STRING'
@@ -31,21 +35,21 @@ function jsonifyObject(object: any): string {
 
 describe("tasks -> DetermineTask", function () {
     it(`should return TASK_TYPE = ${NUMBER_TASK_TYPE} on requestBody = ${JSON.stringify(numbersAddRequestBody)}`, function () {
-        const determinedTask = DetermineTask(numbersAddRequestBody)
+        const determinedTask = Tasks.DetermineTask(numbersAddRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         expect(determinedTask).to.be.equal(NUMBER_TASK_TYPE)
     })
 
     it(`should return TASK_TYPE = ${STRING_TASK_TYPE} on requestBody = ${JSON.stringify(stringRequestBody)}`, function () {
-        const determinedTask = DetermineTask(stringRequestBody)
+        const determinedTask = Tasks.DetermineTask(stringRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         expect(determinedTask).to.be.equal(STRING_TASK_TYPE)
     })
 
     it(`should return null if fields are empty on requestBody = ${JSON.stringify(emptyRequestBody)}`, function () {
-        const determinedTask = DetermineTask(emptyRequestBody)
+        const determinedTask = Tasks.DetermineTask(emptyRequestBody)
 
         expect(determinedTask).to.be.null
     })
@@ -54,8 +58,8 @@ describe("tasks -> DetermineTask", function () {
 describe("tasks -> DetermineSubTask", function () {
 
     it(`should return TASK_TYPE = ${NUMBER_TASK_TYPE}, SUB_TASK_TYPE = ${ADD_SUB_TASK_TYPE} on requestBody = ${JSON.stringify(numbersAddRequestBody)}`, function () {
-        const determinedTask = DetermineTask(numbersAddRequestBody)
-        const determinedSubTask = DetermineSubTask(determinedTask, numbersAddRequestBody)
+        const determinedTask = Tasks.DetermineTask(numbersAddRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(determinedTask, numbersAddRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         assert.typeOf(determinedSubTask, 'string')
@@ -65,8 +69,8 @@ describe("tasks -> DetermineSubTask", function () {
     })
 
     it(`should return TASK_TYPE = ${NUMBER_TASK_TYPE}, SUB_TASK_TYPE = ${SUBTRACT_SUB_TASK_TYPE} on requestBody = ${JSON.stringify(numbersSubtractRequestBody)}`, function () {
-        const determinedTask = DetermineTask(numbersSubtractRequestBody)
-        const determinedSubTask = DetermineSubTask(determinedTask, numbersSubtractRequestBody)
+        const determinedTask = Tasks.DetermineTask(numbersSubtractRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(determinedTask, numbersSubtractRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         assert.typeOf(determinedSubTask, 'string')
@@ -76,8 +80,8 @@ describe("tasks -> DetermineSubTask", function () {
     })
 
     it(`should return TASK_TYPE = ${NUMBER_TASK_TYPE}, SUB_TASK_TYPE = ${MULTIPLY_SUB_TASK_TYPE} on requestBody = ${JSON.stringify(numbersMultiplyRequestBody)}`, function () {
-        const determinedTask = DetermineTask(numbersMultiplyRequestBody)
-        const determinedSubTask = DetermineSubTask(determinedTask, numbersMultiplyRequestBody)
+        const determinedTask = Tasks.DetermineTask(numbersMultiplyRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(determinedTask, numbersMultiplyRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         assert.typeOf(determinedSubTask, 'string')
@@ -87,8 +91,8 @@ describe("tasks -> DetermineSubTask", function () {
     })
 
     it(`should return TASK_TYPE = ${NUMBER_TASK_TYPE}, SUB_TASK_TYPE = ${DIVIDE_SUB_TASK_TYPE} on requestBody = ${JSON.stringify(numbersDivideRequestBody)}`, function () {
-        const determinedTask = DetermineTask(numbersDivideRequestBody)
-        const determinedSubTask = DetermineSubTask(determinedTask, numbersDivideRequestBody)
+        const determinedTask = Tasks.DetermineTask(numbersDivideRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(determinedTask, numbersDivideRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         assert.typeOf(determinedSubTask, 'string')
@@ -98,8 +102,8 @@ describe("tasks -> DetermineSubTask", function () {
     })
 
     it(`should return TASK_TYPE = ${STRING_TASK_TYPE}, SUB_TASK_TYPE = ${ADD_SUB_TASK_TYPE} on requestBody = ${JSON.stringify(stringRequestBody)}`, function () {
-        const determinedTask = DetermineTask(stringRequestBody)
-        const determinedSubTask = DetermineSubTask(determinedTask, stringRequestBody)
+        const determinedTask = Tasks.DetermineTask(stringRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(determinedTask, stringRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         assert.typeOf(determinedSubTask, 'string')
@@ -109,8 +113,8 @@ describe("tasks -> DetermineSubTask", function () {
     })
 
     it(`should return TASK_TYPE = ${STRING_TASK_TYPE}, SUB_TASK_TYPE = ${ADD_SUB_TASK_TYPE} despite requestBody = ${JSON.stringify(erroneousStringRequestBody)}`, function () {
-        const determinedTask = DetermineTask(stringRequestBody)
-        const determinedSubTask = DetermineSubTask(determinedTask, erroneousStringRequestBody)
+        const determinedTask = Tasks.DetermineTask(stringRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(determinedTask, erroneousStringRequestBody)
 
         assert.typeOf(determinedTask, 'string')
         assert.typeOf(determinedSubTask, 'string')
@@ -121,7 +125,7 @@ describe("tasks -> DetermineSubTask", function () {
 
 
     it(`should return undefined SUB_TASK_TYPE if TASK_TYPE is null`, function () {
-        const determinedSubTask = DetermineSubTask(null, erroneousStringRequestBody)
+        const determinedSubTask = Tasks.DetermineSubTask(null, erroneousStringRequestBody)
 
         expect(determinedSubTask).to.be.undefined
     })
@@ -129,22 +133,85 @@ describe("tasks -> DetermineSubTask", function () {
 })
 
 
-// var chai = require('chai')
-// chai.should()
-// chai.use(require('chai-interface'))
+describe("tasks -> TaskDeterminer", function () {
+    let tasksMock: sinon.SinonMock
 
-// var foo = {
-//     bar: true,
-//     baz: 'green',
-//     qux: 37,
-//     quack: function () { },
-//     ducks: [1, 2, 3]
-// }
+    const myContainerName = os.hostname()
 
-// foo.should.have.interface({
-//     bar: Boolean,
-//     baz: String,
-//     qux: Number,
-//     quack: Function,
-//     ducks: Array
-// })
+    const dummyRawDockerContainers = [
+        {
+            data: {
+                Id: myContainerName,
+                Labels: {
+                    'com.docker.swarm.service.name': 'container-1'
+                }
+            }
+        },
+        {
+            data: {
+                Id: 'container-2',
+                Labels: {
+                    'com.docker.swarm.service.name': 'container-1'
+                }
+            }
+        }
+    ]
+
+    const dummyDockerClient: any = {
+        container: {
+            list: () => Promise.resolve(dummyRawDockerContainers)
+        }
+    }
+
+    const containerInfoSpy = new ContainerInfo(dummyDockerClient)
+    let getSelectedEventContainerIdAndServiceStub: any
+
+    beforeEach(function () {
+        tasksMock = sinon.mock(Tasks)
+
+        getSelectedEventContainerIdAndServiceStub = sinon.stub(Util, 'getSelectedEventContainerIdAndService').resolves({
+            id: '',
+            service: ''
+        })
+    })
+
+    afterEach(function () {
+        if (tasksMock)
+            tasksMock.restore()
+
+        if (getSelectedEventContainerIdAndServiceStub)
+            getSelectedEventContainerIdAndServiceStub.restore()
+    })
+
+
+    it(`should throw error on invalid requestBody (requestBody = '${invalidRequestBody}')`, function () {
+        let containerInfoDummy: ContainerInfo
+
+        tasksMock.expects('TaskDeterminer').withExactArgs(invalidRequestBody, containerInfoDummy).threw()
+        Tasks.TaskDeterminer(invalidRequestBody, containerInfoDummy)
+
+        tasksMock.verify()
+    })
+
+    it(`should call fetchContainerInfo from ContainerInfo object at least once`, async function () {
+        const fetchContainerSpy = sinon.spy(containerInfoSpy, 'fetchContainerInfo')
+        await Tasks.TaskDeterminer(numbersAddRequestBody, containerInfoSpy)
+
+        expect(fetchContainerSpy.calledOnce).to.be.true
+    })
+
+    it(`should call fetchEventContainer from ContainerInfo object at least once`, async function () {
+        const fetchEventContainerSpy = sinon.spy(containerInfoSpy, 'fetchEventContainer')
+        // Lesson, always await for functions returning promises
+        await Tasks.TaskDeterminer(numbersAddRequestBody, containerInfoSpy)
+        expect(fetchEventContainerSpy.calledOnce).to.be.true
+    })
+
+    it(`should return object with TaskInterface on valid inputs`, async function () {
+        const parsedTask = await Tasks.TaskDeterminer(numbersAddRequestBody, containerInfoSpy)
+
+        expect(parsedTask).to.haveOwnProperty('serviceContainerId')
+    })
+
+
+})
