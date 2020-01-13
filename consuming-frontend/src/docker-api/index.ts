@@ -11,15 +11,7 @@ export class ContainerInfo {
     private id: string
     private service: string
 
-    private dockerClient: Docker
-
-    constructor(dummyDockerClient?: any) {
-        if (dummyDockerClient)
-            this.dockerClient = dummyDockerClient
-        else
-            this.dockerClient = new Docker({ socketPath: '/var/run/docker.sock' })
-    }
-
+    constructor() { }
 
     public async fetchContainerInfo(): Promise<ContainerInfoInterface> {
         try {
@@ -112,8 +104,8 @@ export class ContainerInfo {
 
     private async getDockerContainerList(): Promise<Array<any>> {
         try {
-            // const docker = new Docker({ socketPath: '/var/run/docker.sock' })
-            const containerArray: Array<any> = await this.dockerClient.container.list()
+            const docker = new Docker({ socketPath: '/var/run/docker.sock' })
+            const containerArray: Array<any> = await docker.container.list()
 
             return containerArray
         } catch (e) {

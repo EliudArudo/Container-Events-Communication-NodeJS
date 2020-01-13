@@ -13,7 +13,7 @@ export function pushResponseToBuffers(response: ReceivedEventInterface): void {
     responses.push(response)
 }
 
-function clearResponseFromBuffers(response: ReceivedEventInterface): void {
+export function clearResponseFromBuffers(response: ReceivedEventInterface): void {
     responseBuffer = responseBuffer.filter(res => res != response.requestId)
     responses = responses.filter(res => JSON.stringify(res) != JSON.stringify(response))
 }

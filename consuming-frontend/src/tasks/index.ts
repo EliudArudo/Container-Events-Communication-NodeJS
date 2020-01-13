@@ -113,7 +113,7 @@ export async function TaskDeterminer(requestBody: any, containerInfo: ContainerI
 
 }
 
-function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: RedisClient): void {
+export function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: RedisClient): void {
     functionRedisPublisher.publish(EventService, JSON.stringify(task))
 }
 
@@ -125,7 +125,7 @@ function setTimeoutAsync(time: number): Promise<any> {
 }
 
 
-async function waitForResult(requestId: string): Promise<any> {
+export async function waitForResult(requestId: string): Promise<any> {
     try {
 
         let response: ReceivedEventInterface = getResponseFromBuffer(requestId)

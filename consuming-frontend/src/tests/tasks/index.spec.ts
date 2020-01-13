@@ -5,8 +5,11 @@ import * as sinon from 'sinon'
 import * as Tasks from '../../tasks/index'
 import * as Util from '../../util/index'
 
-import { TASK_TYPE, SUB_TASK_TYPE } from '../../interfaces/index'
+import { TASK_TYPE, SUB_TASK_TYPE, ReceivedEventInterface } from '../../interfaces/index'
 import { ContainerInfo } from '../../docker-api'
+import * as NodeDockerAPI from 'node-docker-api'
+import { TaskInterface } from '../../interfaces'
+import { Task } from 'node-docker-api/lib/task'
 
 const expect = chai.expect
 const assert = chai.assert
@@ -157,21 +160,24 @@ describe("tasks -> TaskDeterminer", function () {
         }
     ]
 
-    const dummyDockerClient: any = {
-        container: {
-            list: () => Promise.resolve(dummyRawDockerContainers)
-        }
-    }
+    let dockerClientStub: sinon.SinonStub
 
-    const containerInfoSpy = new ContainerInfo(dummyDockerClient)
+    const containerInfoSpy = new ContainerInfo()
     let getSelectedEventContainerIdAndServiceStub: any
 
     beforeEach(function () {
+        dockerClientStub = sinon.stub(NodeDockerAPI, 'Docker')
         tasksMock = sinon.mock(Tasks)
 
         getSelectedEventContainerIdAndServiceStub = sinon.stub(Util, 'getSelectedEventContainerIdAndService').resolves({
             id: '',
             service: ''
+        })
+
+        dockerClientStub.returns({
+            container: {
+                list: () => Promise.resolve(dummyRawDockerContainers)
+            }
         })
     })
 
@@ -181,6 +187,9 @@ describe("tasks -> TaskDeterminer", function () {
 
         if (getSelectedEventContainerIdAndServiceStub)
             getSelectedEventContainerIdAndServiceStub.restore()
+
+        if (dockerClientStub)
+            dockerClientStub.restore()
     })
 
 
@@ -212,6 +221,113 @@ describe("tasks -> TaskDeterminer", function () {
 
         expect(parsedTask).to.haveOwnProperty('serviceContainerId')
     })
+})
 
+describe(`tasks -> waitForResult`, function () {
+    const dummyResponseArrivalTime: number = 10
+
+    it(`should return result when response returns after ${dummyResponseArrivalTime} ms`, async function () {
+        const dummyRequestId: string = 'id1'
+        const dummyResponse: ReceivedEventInterface = {
+            service: '',
+            containerId: '',
+            requestId: dummyRequestId,
+            responseBody: 'dummyResponseBody'
+        }
+
+        await setTimeout(() => {
+            Util.pushResponseToBuffers(dummyResponse)
+        }, dummyResponseArrivalTime)
+
+        const returnedResponseBody = await Tasks.waitForResult(dummyRequestId)
+
+        expect(returnedResponseBody).to.be.equal(dummyResponse.responseBody)
+
+        Util.clearResponseFromBuffers(dummyResponse)
+    })
+
+})
+
+
+// Integrated test here
+describe(`tasks -> TaskController`, function () {
+    // TaskDeterminer called with arguments
+    // sendTaskToEventsService called with args
+    // Wait for result is called with args
+    // Returns expected response
+
+    // TaskController stub
+    // TaskDeterminer stub
+    // sendTaskToEventService stub
+    // waitForResult stub
+
+    let TaskControllerStub: sinon.SinonStub
+    let TaskDeterminerStub: sinon.SinonStub
+    let sendTaskToEventServiceStub: sinon.SinonStub
+    let waitForResultStub: sinon.SinonStub
+
+    const dummyContainerInfoObject = new ContainerInfo()
+    const dummyRequestBody = '{ a1: 3, a2: 4}'
+
+    const dummyRequestId: string = 'id1'
+
+    const dummyTask: TaskInterface = {
+        task: 'NUMBER',
+        subtask: 'ADD',
+        containerId: '',
+        service: '',
+        requestId: dummyRequestId,
+        requestBody: '',
+        serviceContainerId: '',
+        serviceContainerService: ''
+    }
+
+    const dummyResponse: ReceivedEventInterface = {
+        service: '',
+        containerId: '',
+        requestId: dummyRequestId,
+        responseBody: 'dummyResponseBody'
+    }
+
+    beforeEach(async function () {
+        Util.pushResponseToBuffers(dummyResponse)
+
+        TaskControllerStub = sinon.stub(Tasks, 'TaskController')
+
+        TaskDeterminerStub = sinon.stub(Tasks, 'TaskDeterminer')
+        TaskDeterminerStub.resolves(dummyTask)
+
+        sendTaskToEventServiceStub = sinon.stub(Tasks, 'sendTaskToEventsService')
+
+        waitForResultStub = sinon.stub(Tasks, 'waitForResult')
+        waitForResultStub.resolves(dummyResponse.requestBody)
+
+        await Tasks.TaskController(dummyRequestBody, dummyContainerInfoObject)
+    })
+
+    afterEach(function () {
+        if (TaskControllerStub)
+            TaskControllerStub.restore()
+
+        if (TaskDeterminerStub)
+            TaskDeterminerStub.restore()
+
+        if (sendTaskToEventServiceStub)
+            sendTaskToEventServiceStub.restore()
+
+        if (waitForResultStub)
+            waitForResultStub.restore()
+
+        Util.clearResponseFromBuffers(dummyResponse)
+    })
+
+    it(`should be called at least once with requestBody: ${dummyRequestBody}`, function () {
+        expect(TaskControllerStub.calledOnce).to.be.true
+        expect(TaskControllerStub.calledWithExactly(dummyRequestBody, dummyContainerInfoObject)).to.be.true
+    })
+
+    // it(`should call TaskDeterminer with requestBody and dummyContainerInfoObject`, async function () {
+    //     expect(TaskDeterminerStub.calledOnce).to.be.true
+    // })
 
 })
