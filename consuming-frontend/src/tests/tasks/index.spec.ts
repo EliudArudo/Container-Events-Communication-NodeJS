@@ -10,6 +10,7 @@ import { ContainerInfo } from '../../docker-api'
 import * as NodeDockerAPI from 'node-docker-api'
 import { TaskInterface } from '../../interfaces'
 import { Task } from 'node-docker-api/lib/task'
+import { before } from 'mocha'
 
 const expect = chai.expect
 const assert = chai.assert
@@ -181,17 +182,17 @@ describe("tasks -> TaskDeterminer", function () {
         })
     })
 
+
     afterEach(function () {
+        if (dockerClientStub)
+            dockerClientStub.restore()
+
         if (tasksMock)
             tasksMock.restore()
 
         if (getSelectedEventContainerIdAndServiceStub)
             getSelectedEventContainerIdAndServiceStub.restore()
-
-        if (dockerClientStub)
-            dockerClientStub.restore()
     })
-
 
     it(`should throw error on invalid requestBody (requestBody = '${invalidRequestBody}')`, function () {
         let containerInfoDummy: ContainerInfo
@@ -221,6 +222,7 @@ describe("tasks -> TaskDeterminer", function () {
 
         expect(parsedTask).to.haveOwnProperty('serviceContainerId')
     })
+
 })
 
 describe(`tasks -> waitForResult`, function () {
