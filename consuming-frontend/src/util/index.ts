@@ -6,7 +6,7 @@ import { ContainerInfo } from "../docker-api";
 export let responseBuffer: Array<string> = []
 
 const FILENAME = 'util/index.ts'
-let responses: Array<ReceivedEventInterface> = []
+export let responses: Array<ReceivedEventInterface> = []
 
 export function pushResponseToBuffers(response: ReceivedEventInterface): void {
     responseBuffer.push(response.requestId)
@@ -34,7 +34,7 @@ export function getResponseFromBuffer(requestId: string): ReceivedEventInterface
 
 export async function getSelectedEventContainerIdAndService(): Promise<ContainerInfoInterface> {
     try {
-        const containerInfo = new ContainerInfo
+        const containerInfo = new ContainerInfo()
         const containers: Array<ContainerInfoInterface> = await containerInfo.getFreshContainers()
 
         const selectedContainers: Array<ContainerInfoInterface> = []

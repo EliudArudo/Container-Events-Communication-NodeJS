@@ -9,8 +9,6 @@ import { TASK_TYPE, SUB_TASK_TYPE, ReceivedEventInterface } from '../../interfac
 import { ContainerInfo } from '../../docker-api'
 import * as NodeDockerAPI from 'node-docker-api'
 import { TaskInterface } from '../../interfaces'
-import { Task } from 'node-docker-api/lib/task'
-import { before } from 'mocha'
 
 const expect = chai.expect
 const assert = chai.assert
@@ -32,10 +30,6 @@ const SUBTRACT_SUB_TASK_TYPE: SUB_TASK_TYPE = 'SUBTRACT'
 const MULTIPLY_SUB_TASK_TYPE: SUB_TASK_TYPE = 'MULTIPLY'
 const DIVIDE_SUB_TASK_TYPE: SUB_TASK_TYPE = 'DIVIDE'
 
-
-function jsonifyObject(object: any): string {
-    return JSON.stringify(object)
-}
 
 describe("tasks -> DetermineTask", function () {
     it(`should return TASK_TYPE = ${NUMBER_TASK_TYPE} on requestBody = ${JSON.stringify(numbersAddRequestBody)}`, function () {
@@ -253,15 +247,6 @@ describe(`tasks -> waitForResult`, function () {
 
 // Integrated test here
 describe(`tasks -> TaskController`, function () {
-    // TaskDeterminer called with arguments
-    // sendTaskToEventsService called with args
-    // Wait for result is called with args
-    // Returns expected response
-
-    // TaskController stub
-    // TaskDeterminer stub
-    // sendTaskToEventService stub
-    // waitForResult stub
 
     let TaskControllerStub: sinon.SinonStub
     let TaskDeterminerStub: sinon.SinonStub
@@ -328,8 +313,5 @@ describe(`tasks -> TaskController`, function () {
         expect(TaskControllerStub.calledWithExactly(dummyRequestBody, dummyContainerInfoObject)).to.be.true
     })
 
-    // it(`should call TaskDeterminer with requestBody and dummyContainerInfoObject`, async function () {
-    //     expect(TaskDeterminerStub.calledOnce).to.be.true
-    // })
 
 })
