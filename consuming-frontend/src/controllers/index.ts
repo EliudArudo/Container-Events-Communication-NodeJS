@@ -23,7 +23,6 @@ export function requestRouteController(req: any, res: any): void {
 
 
 export function _404RouterHandler(err: any, req: any, res: any, next: any) {
-    console.log(JSON.stringify(res))
     res.status(404).send({ message: err.message })
 }
 
