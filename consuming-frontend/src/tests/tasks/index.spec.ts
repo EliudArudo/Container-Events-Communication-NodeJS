@@ -312,6 +312,4 @@ describe(`tasks -> TaskController`, function () {
         expect(TaskControllerStub.calledOnce).to.be.true
         expect(TaskControllerStub.calledWithExactly(dummyRequestBody, dummyContainerInfoObject)).to.be.true
     })
-
-
 })

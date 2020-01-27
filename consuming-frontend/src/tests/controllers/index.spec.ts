@@ -21,9 +21,3 @@ describe(`controllers -> indexController`, function () {
     })
 
 })
-
-
-describe(`controllers -> _404RouterHandler`, function () {
-    // Come back for this
-
-})

@@ -105,31 +105,4 @@ describe(`docker-api -> fetchContainerInfo`, function () {
     })
 })
 
-// getFreshContainers
-// - getDockerContainerList is called
-//   - Mock and return empty containerArray list
-//     - Should return error
-// - On returning dummy containers, parsedContainers should be valid
-// - Should return parsed containers
-//   - Mocks should return what they're supposed to return
-
-// initialise
-// - getDockerContainerList should be called
-// - setContainerInfoUsingContainerArray should be called
-//   - have to Mock getDockerContainerList and return containerArray
-//   - have to Mock os and return dummy hostname
-
-// getDockerContainerList
-// - should call on docker.container.list()
-// - should return valid containerArray
-//   - mock docker container list
-
-// setContainerInfoUsingContainerArray
-// - should throw error if containerArray is non existent
-// - should correctly set id and service on dummy data
-//   - call fetchOfflineContainerInfo to ensure this
-
-// getParsedContainers
-// - should throw if container array is invalid
-// - should correctly  parse containers to id and service
 
