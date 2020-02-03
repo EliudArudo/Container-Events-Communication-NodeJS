@@ -88,6 +88,8 @@ describe(`util -> pushResponseToBuffers`, function () {
     })
 })
 
+// "test-watch": "mocha --watch --watch-extensions ts --require ts-node/register src/tests/**/*.spec.ts"
+
 
 describe(`util -> getResponseFromBuffer`, function () {
     let clearResponseFromBufferStub: sinon.SinonStub

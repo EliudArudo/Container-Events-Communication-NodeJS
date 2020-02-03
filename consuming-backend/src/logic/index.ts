@@ -67,15 +67,15 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
     redisPublisher.publish(EventService, stringifiedEvents)
 }
 
-function performTaskAndRespond(task: ReceivedEventInterface): void {
+export function performTaskAndRespond(task: ReceivedEventInterface): void {
+    console.log('called')
     const results = performLogic(task)
     sendResultsToEventService(task, results)
 }
 
 
 // LOGIC - Dev Logic
-
-function performLogic(task: ReceivedEventInterface): any {
+export function performLogic(task: ReceivedEventInterface): any {
     let result: any
     const data = JSON.parse(task.requestBody)
     const item1 = data[Object.keys(data)[0]]

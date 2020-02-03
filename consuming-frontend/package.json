@@ -9,7 +9,7 @@
     "runit": "node src/server.js",
     "start": "npm run compile && npm run runit",
     "test": "mocha --require ts-node/register src/tests/**/*.ts",
-    "test-watch": "mocha --watch --watch-extensions ts --require ts-node/register src/tests/**/*.ts"
+    "test-watch": "mocha --require ts-node/register --watch --watch-extensions ts src/tests/**/*.ts"
   },
   "author": "Eliud Arudo",
   "license": "ISC",
@@ -22,17 +22,16 @@
     "node-docker-api": "^1.1.22",
     "redis": "^2.8.0",
     "typescript": "^3.6.2",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.0.3",
+    "sinon": "^8.1.1",
+    "ts-node": "^8.3.0",
+    "chai": "^4.2.0",
+    "mocha": "^5.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.7",
     "@types/mocha": "^5.2.7",
     "@types/sinon": "^7.5.1",
-    "chai": "^4.2.0",
-    "chai-interface": "^2.0.3",
-    "mocha": "^6.2.2",
-    "nodemon": "^1.19.2",
-    "sinon": "^8.0.2",
-    "ts-node": "^8.3.0"
+    "nodemon": "^1.19.2"
   }
 }

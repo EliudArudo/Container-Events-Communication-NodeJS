@@ -41,32 +41,32 @@ const dummySelectedEventContainer: ContainerInfoInterface = {
 
 
 describe(`docker-api -> fetchContainerInfo`, function () {
-    // const containerInfo = new ContainerInfo()
-    // let dockerStub: sinon.SinonStub
+    const containerInfo = new ContainerInfo()
+    let dockerStub: sinon.SinonStub
 
-    // beforeEach(() => {
-    //     dockerStub = sinon.stub(NodeDockerAPI, 'Docker')
-    //     dockerStub.returns({
-    //         container: {
-    //             list: () => Promise.resolve(dummyRawDockerContainers)
-    //         }
-    //     })
-    // })
+    beforeEach(() => {
+        dockerStub = sinon.stub(NodeDockerAPI, 'Docker')
+        dockerStub.returns({
+            container: {
+                list: () => Promise.resolve(dummyRawDockerContainers)
+            }
+        })
+    })
 
-    // afterEach(() => {
-    //     if (dockerStub)
-    //         dockerStub.restore()
-    // })
+    afterEach(() => {
+        if (dockerStub)
+            dockerStub.restore()
+    })
 
-    // it(`should call initialise()`, function () {
-    //     const initializeSpy = sinon.spy(containerInfo, <any>'initialise')
+    it(`should call initialise()`, function () {
+        const initializeSpy = sinon.spy(containerInfo, <any>'initialise')
 
-    //     containerInfo.fetchContainerInfo()
+        containerInfo.fetchContainerInfo()
 
-    //     expect(initializeSpy.calledOnce).to.be.true
+        expect(initializeSpy.calledOnce).to.be.true
 
-    //     initializeSpy.restore()
-    //     dockerStub.restore()
-    // })
+        initializeSpy.restore()
+        dockerStub.restore()
+    })
 })
 

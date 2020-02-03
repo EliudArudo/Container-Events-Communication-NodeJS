@@ -8,65 +8,94 @@ import { ContainerInfo } from '../../docker-api'
 
 const expect = chai.expect
 
-describe(`logic -> EventDeterminer`, function () {
-    // const dummyContainerId = "containerId"
-    // const dummyContainerService = "consumingfrontend"
-    // const dummyRequestId = "requestId"
+describe(`logic -> performLogic`, function () {
+    const dummyContainerId = "containerId"
+    const dummyContainerService = "consumingfrontend"
 
-    // const fakeContainerInfo: ContainerInfoInterface = {
-    //     id: dummyContainerId,
-    //     service: dummyContainerService
-    // }
+    const dummyStringAddRequestBody = "{ \"a1\": \"a\", \"a2\": \"b\"}"
+    const dummyNumberAddRequestBody = "{ \"a1\": 4, \"a2\": 5 }"
+    const dummyNumberSubtractRequestBody = "{ \"s1\": 4, \"s2\": 5 }"
+    const dummyNumberMultiplyRequestBody = "{ \"m1\": 4, \"m2\": 5 }"
+    const dummyNumberDivideRequestBody = "{ \"d1\": 4, \"d2\": 2}"
 
-    // const dummyEvent: ReceivedEventInterface = {
-    //     containerId: dummyContainerId,
-    //     service: dummyContainerService,
-    //     requestId: dummyRequestId,
-    //     responseBody: 'dummyResponseBody'
-    // }
+    const expectedStringAddResult = "ab"
+    const expectedNumberAddResult = 9
+    const expectedNumberSubtractResult = -1
+    const expectedNumberMultiplyResult = 20
+    const expectedNumberDivideResult = 2
 
-    // const jsonEvent: string = JSON.stringify(dummyEvent)
 
-    // const containerInfo = new ContainerInfo()
+    const fakeContainerInfo: ContainerInfoInterface = {
+        id: dummyContainerId,
+        service: dummyContainerService
+    }
 
-    // let containerInfoStub: sinon.SinonStub
-    // let responseMock: sinon.SinonMock
+    const dummyEvent: ReceivedEventInterface = {
+        containerId: dummyContainerId,
+        service: dummyContainerService
+    }
 
-    // beforeEach(function () {
+    let containerInfoStub: sinon.SinonStub
 
-    //     containerInfoStub = sinon.stub(ContainerInfo.prototype, 'fetchOfflineContainerInfo')
-    //     containerInfoStub.returns(fakeContainerInfo)
+    beforeEach(function () {
 
-    //     responseMock = sinon.mock(Util.responses)
-    // })
+        containerInfoStub = sinon.stub(ContainerInfo.prototype, 'fetchOfflineContainerInfo')
+        containerInfoStub.returns(fakeContainerInfo)
+    })
 
-    // afterEach(function () {
-    //     if (containerInfoStub)
-    //         containerInfoStub.restore()
+    afterEach(function () {
+        if (containerInfoStub)
+            containerInfoStub.restore()
+    })
 
-    //     if (responseMock)
-    //         responseMock.restore()
+    it(`should return '${expectedStringAddResult}' when requestBody: ${dummyStringAddRequestBody}`, function () {
+        dummyEvent.task = "STRING"
+        dummyEvent.subtask = "ADD"
+        dummyEvent.requestBody = dummyStringAddRequestBody
 
-    //     Util.clearResponseFromBuffers(dummyEvent)
-    // })
+        const result = Logic.performLogic(dummyEvent)
 
-    // it(`should push event as response to buffers if ours`, function () {
-    //     responseMock.expects('push').calledWithExactly(dummyRequestId)
+        expect(result).to.equal(expectedStringAddResult)
+    })
 
-    //     Logic.EventDeterminer(jsonEvent, containerInfo)
+    it(`should return '${expectedNumberAddResult}' when requestBody: ${dummyNumberAddRequestBody}`, function () {
+        dummyEvent.task = "NUMBER"
+        dummyEvent.subtask = "ADD"
+        dummyEvent.requestBody = dummyNumberAddRequestBody
 
-    //     responseMock.verify()
-    // })
+        const result = Logic.performLogic(dummyEvent)
 
-    // it(`should not push event if it's not ours`, function () {
+        expect(result).to.equal(expectedNumberAddResult)
+    })
 
-    //     const wrongEvent: ReceivedEventInterface = { ...dummyEvent }
-    //     wrongEvent.containerId = 'wrong_container_id'
+    it(`should return '${expectedNumberSubtractResult}' when requestBody: ${dummyNumberDivideRequestBody}`, function () {
+        dummyEvent.task = "NUMBER"
+        dummyEvent.subtask = "SUBTRACT"
+        dummyEvent.requestBody = dummyNumberSubtractRequestBody
 
-    //     const jsonWrongEvent: string = JSON.stringify(wrongEvent)
+        const result = Logic.performLogic(dummyEvent)
 
-    //     Logic.EventDeterminer(jsonWrongEvent, containerInfo)
+        expect(result).to.equal(expectedNumberSubtractResult)
+    })
 
-    //     expect(Util.responses.length).to.equal(0)
-    // })
+    it(`should return '${expectedNumberMultiplyResult}' when requestBody: ${dummyNumberMultiplyRequestBody}`, function () {
+        dummyEvent.task = "NUMBER"
+        dummyEvent.subtask = "MULTIPLY"
+        dummyEvent.requestBody = dummyNumberMultiplyRequestBody
+
+        const result = Logic.performLogic(dummyEvent)
+
+        expect(result).to.equal(expectedNumberMultiplyResult)
+    })
+
+    it(`should return '${expectedNumberDivideResult}' when requestBody: ${dummyNumberDivideRequestBody}`, function () {
+        dummyEvent.task = "NUMBER"
+        dummyEvent.subtask = "DIVIDE"
+        dummyEvent.requestBody = dummyNumberDivideRequestBody
+
+        const result = Logic.performLogic(dummyEvent)
+
+        expect(result).to.equal(expectedNumberDivideResult)
+    })
+
 })
