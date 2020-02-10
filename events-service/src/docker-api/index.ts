@@ -13,7 +13,7 @@ export class DockerAPI {
 
     constructor() { }
 
-    private static async initialise(): Promise<void> {
+    public static async initialise(): Promise<void> {
         try {
             const infoWasAlreadyInitialised = this.id && this.service
             if (infoWasAlreadyInitialised)
@@ -85,7 +85,7 @@ export class DockerAPI {
         }
     }
 
-    private static async getDockerContainerList(): Promise<Array<any>> {
+    public static async getDockerContainerList(): Promise<Array<any>> {
         try {
             const docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
@@ -101,7 +101,7 @@ export class DockerAPI {
         }
     }
 
-    private static getParsedContainers(containerArray): Array<ParsedContainerInterface> {
+    public static getParsedContainers(containerArray): Array<ParsedContainerInterface> {
         let parsedContainers: Array<ParsedContainerInterface> = []
         if (!containerArray || !Array.isArray(containerArray) || (Array.isArray(containerArray) && containerArray.length === 0))
             throw new Error('getParsedContainers: No containers brought in')

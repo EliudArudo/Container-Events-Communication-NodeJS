@@ -13,7 +13,7 @@ export async function getSelectedContainerIdAndService(task: EventInterface): Pr
 
         const selectedContainers: Array<ParsedContainerInterface> = []
 
-        const selectedService = TaskMaps[task.task].toLowerCase()
+        let selectedService = TaskMaps[task.task]
         for (const container of containers) {
             const lowerCaseContainerService = container.containerService.toLowerCase()
             const containerBelongsToSelectedService: boolean =
