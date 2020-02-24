@@ -18,9 +18,9 @@ jobs:
 
             - name: Install And Test
               working-directory: ./consuming-frontend  
-              run: '|'
+              run: \|
                 npm install
-                npm Test
+                npm test
 
     cd: 
         runs-on: ubuntu-latest
@@ -36,12 +36,12 @@ jobs:
               run: docker build -t consuming-frontend .  
 
             - name: Tags  
-              run: '|'
+              run: \|
                 docker tag consuming-frontend ${{ secrets.DOCKER_USER }}/consuming-frontend:${{ github.sha }}
                 docker tag consuming-frontend ${{ secrets.DOCKER_USER }}/consuming-frontend:latest
 
             - name: Push
-              run: '|'    
+              run: \|   
                 docker push ${{ secrets.DOCKER_USER }}/consuming-frontend:${{ github.sha }}
                 docker push ${{ secrets.DOCKER_USER }}/consuming-frontend:latest
 
