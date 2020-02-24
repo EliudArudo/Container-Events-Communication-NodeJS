@@ -21,6 +21,8 @@ jobs:
                 node-version: '10.x'
               working-directory: ./consuming-frontend  
               run: npm install
+              env:
+                CI: true
               run: npm test
                 
     cd: 
