@@ -48,7 +48,7 @@ export async function EventDeterminer(sentEvent: string): Promise<void> {
 }
 
 
-function getParsedResponseInfo(task: EventInterface, existingRecordInfo: InitialisedRecordInfoInterface): EventInterface {
+export function getParsedResponseInfo(task: EventInterface, existingRecordInfo: InitialisedRecordInfoInterface): EventInterface {
     const parsedResponseInfo: EventInterface = {
         requestId: task.requestId,
         containerId: task.containerId,
@@ -104,7 +104,8 @@ function sendEventToContainer(eventInfo: EventInterface): void {
 }
 
 // DockerAPI ops
-function parseEventFromRecordInfo(initRecordInfo: InitialisedRecordInfoInterface): EventInterface {
+
+export function parseEventFromRecordInfo(initRecordInfo: InitialisedRecordInfoInterface): EventInterface {
     const event: EventInterface = {
         containerId: initRecordInfo.chosenContainerId,
         service: initRecordInfo.chosenContainerService,
@@ -119,8 +120,8 @@ function parseEventFromRecordInfo(initRecordInfo: InitialisedRecordInfoInterface
     return event
 }
 
+
 function allocateTaskToConsumingContainer(initRecordInfo: InitialisedRecordInfoInterface): void {
     const eventToSend: EventInterface = parseEventFromRecordInfo(initRecordInfo)
     sendEventToContainer(eventToSend)
-
 }

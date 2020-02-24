@@ -19,7 +19,7 @@ const FILENAME = 'tasks/index.ts'
 
 const WAITINGTIMEFORRESPONSE: number = 10
 
-function DetermineTask(requestBody: any): TASK_TYPE {
+export function DetermineTask(requestBody: any): TASK_TYPE {
     let task: TASK_TYPE
     let isString: boolean
     let isNumber: boolean
@@ -37,8 +37,7 @@ function DetermineTask(requestBody: any): TASK_TYPE {
     return task
 }
 
-function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
-    const task: TASK_TYPE = DetermineTask(requestBody)
+export function DetermineSubTask(task: TASK_TYPE, requestBody: any): SUB_TASK_TYPE {
     let subtask: SUB_TASK_TYPE;
 
     switch (task) {
@@ -72,11 +71,12 @@ function DetermineSubTask(requestBody: any): SUB_TASK_TYPE {
 
 }
 
-async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): Promise<TaskInterface> {
+
+export async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): Promise<TaskInterface> {
 
     try {
         const task: TASK_TYPE = DetermineTask(requestBody)
-        const subtask: SUB_TASK_TYPE = DetermineSubTask(requestBody)
+        const subtask: SUB_TASK_TYPE = DetermineSubTask(task, requestBody)
 
         if (!task || !subtask) {
             throw new Error('Task not properly categorised')
@@ -100,6 +100,7 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
             serviceContainerId: chosenContainer.id,
             serviceContainerService: chosenContainer.service
         }
+
         return exportTask
         // Determiner chunk here
     } catch (e) {
@@ -112,7 +113,7 @@ async function TaskDeterminer(requestBody: any, containerInfo: ContainerInfo): P
 
 }
 
-function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: RedisClient): void {
+export function sendTaskToEventsService(task: TaskInterface, functionRedisPublisher: RedisClient): void {
     functionRedisPublisher.publish(EventService, JSON.stringify(task))
 }
 
@@ -123,7 +124,8 @@ function setTimeoutAsync(time: number): Promise<any> {
     })
 }
 
-async function waitForResult(requestId: string): Promise<any> {
+
+export async function waitForResult(requestId: string): Promise<any> {
     try {
 
         let response: ReceivedEventInterface = getResponseFromBuffer(requestId)
@@ -144,6 +146,7 @@ async function waitForResult(requestId: string): Promise<any> {
              e:${e}`)
     }
 }
+
 
 export async function TaskController(requestBody: any, containerInfo: ContainerInfo): Promise<any> {
     try {

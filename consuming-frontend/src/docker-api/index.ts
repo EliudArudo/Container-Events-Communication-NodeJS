@@ -46,7 +46,9 @@ export class ContainerInfo {
         return containerInfo
     }
 
+
     public async fetchEventContainer(): Promise<ContainerInfoInterface> {
+
         try {
 
             const selectedEventContainer: ContainerInfoInterface = await getSelectedEventContainerIdAndService()
@@ -61,6 +63,7 @@ export class ContainerInfo {
                 `failed to initialise`)
         }
     }
+
 
     public async getFreshContainers(): Promise<Array<ContainerInfoInterface>> {
         try {
@@ -82,10 +85,12 @@ export class ContainerInfo {
         }
     }
 
+
     private async initialise(): Promise<void> {
         try {
             const containerArray = await this.getDockerContainerList()
-            this.setContainerInfoUsingContainerArray(containerArray)
+            const containerName = os.hostname()
+            this.setContainerInfoUsingContainerArray(containerName, containerArray)
 
         } catch (e) {
             // throw new Error(e)
@@ -100,11 +105,11 @@ export class ContainerInfo {
     private async getDockerContainerList(): Promise<Array<any>> {
         try {
             const docker = new Docker({ socketPath: '/var/run/docker.sock' })
-
             const containerArray: Array<any> = await docker.container.list()
 
             return containerArray
         } catch (e) {
+            console.log(e)
             // throw new Error(e)
             logStatusFileMessage(
                 'Failure',
@@ -114,10 +119,8 @@ export class ContainerInfo {
         }
     }
 
-    private setContainerInfoUsingContainerArray(containerArray: Array<any>): void {
+    private setContainerInfoUsingContainerArray(shortContainerId: string, containerArray: Array<any>): void {
         try {
-            const shortContainerId = os.hostname()
-
             if (!containerArray)
                 throw new Error('No containers available')
 
@@ -132,6 +135,7 @@ export class ContainerInfo {
             this.service = service
 
         } catch (e) {
+
             // throw new Error(e)
             logStatusFileMessage(
                 'Failure',

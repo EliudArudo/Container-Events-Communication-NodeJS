@@ -10,6 +10,7 @@ import { logStatusFileMessage } from "../log"
 
 const FILENAME = "/database-ops/index.ts"
 
+
 async function getExistingRequestDocumentID(request: string): Promise<string> {
     let existingRequestDocumentID: string
     try {
@@ -31,6 +32,7 @@ async function getExistingRequestDocumentID(request: string): Promise<string> {
         return existingRequestDocumentID
     }
 }
+
 
 async function getExistingTask(task: EventInterface): Promise<Document> {
     let existingRecord: Document
@@ -88,6 +90,7 @@ async function getExistingParsedTask(mongoDBTask: Document): Promise<Initialised
 
 }
 
+
 async function getNewParsedTask(mongoDBTask: Document, selectedContainerInfo: ContainerInfoInterface): Promise<InitialisedRecordInfoInterface> {
     const parsedTask: InitialisedRecordInfoInterface = {
         containerId: mongoDBTask['fromContainerId'],
@@ -118,6 +121,7 @@ async function getNewParsedTask(mongoDBTask: Document, selectedContainerInfo: Co
     }
 
 }
+
 
 async function saveNewRequestAndGetID(requestBody: string): Promise<string> {
     try {
@@ -187,6 +191,7 @@ async function recordNewInitialisedTaskWithRequestId(funcTask: EventInterface, r
     }
 }
 
+
 async function recordNewTaskAndRequest(funcTask: EventInterface): Promise<InitialisedRecordInfoInterface> {
     try {
         const requestBodyId: string = await saveNewRequestAndGetID(funcTask.requestBody)
@@ -204,6 +209,7 @@ async function recordNewTaskAndRequest(funcTask: EventInterface): Promise<Initia
             ${e}`)
     }
 }
+
 
 export async function recordNewTaskInDB(task: EventInterface): Promise<InitialisedRecordInfoInterface> {
     try {
@@ -231,6 +237,7 @@ export async function recordNewTaskInDB(task: EventInterface): Promise<Initialis
     }
 }
 
+
 export function getParsedResponse(funcResponse: EventInterface, oldTask: Document): EventInterface {
     const response: EventInterface = {
         requestId: oldTask['fromRequestId'],
@@ -241,6 +248,7 @@ export function getParsedResponse(funcResponse: EventInterface, oldTask: Documen
 
     return response
 }
+
 
 async function saveNewResponseAndGetID(responseBody: string): Promise<string> {
     try {
@@ -280,6 +288,7 @@ export async function completeRecordInDB(funcResponse: EventInterface, receivedT
             `failed to find MongoDBTask by id`)
     }
 }
+
 
 export async function completeExistingTaskRecordInDB(funcResponse: EventInterface): Promise<EventInterface> {
     try {

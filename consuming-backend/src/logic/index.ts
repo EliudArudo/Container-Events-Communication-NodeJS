@@ -67,14 +67,14 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
     redisPublisher.publish(EventService, stringifiedEvents)
 }
 
-function performTaskAndRespond(task: ReceivedEventInterface): void {
+export function performTaskAndRespond(task: ReceivedEventInterface): void {
     const results = performLogic(task)
     sendResultsToEventService(task, results)
 }
 
 
 // LOGIC - Dev Logic
-function performLogic(task: ReceivedEventInterface): any {
+export function performLogic(task: ReceivedEventInterface): any {
     let result: any
     const data = JSON.parse(task.requestBody)
     const item1 = data[Object.keys(data)[0]]
@@ -97,25 +97,30 @@ function performLogic(task: ReceivedEventInterface): any {
     return result
 }
 
+
 function devAddStrings(string1: string, string2: string): string {
     const concatString = string1 + string2
     return concatString
 }
+
 
 function devAddNumber(number1: number, number2: number): number {
     const addedNumber = number1 + number2
     return addedNumber
 }
 
+
 function devSubtractNumber(number1: number, number2: number): number {
     const subtractedNumber = number1 - number2
     return subtractedNumber
 }
 
+
 function devMultiplyNumber(number1: number, number2: number): number {
     const multipliedNumber = number1 * number2
     return multipliedNumber
 }
+
 
 function devDivideNumber(number1: number, number2: number): number {
     const dividedNumber = number1 / number2
