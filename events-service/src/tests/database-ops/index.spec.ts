@@ -30,5 +30,4 @@ describe('database-ops -> getParsedResponse', function () {
         expect(response.responseBody).to.equal(dummyResponse.responseBody)
 
     })
-
 })

@@ -56,7 +56,5 @@ describe('logic -> parseEventFromRecordInfo', function () {
 
         expect(event.containerId).to.equal(dummyInitRecordInfo.chosenContainerId)
         expect(event.service).to.equal(dummyInitRecordInfo.chosenContainerService)
-
     })
-
 })

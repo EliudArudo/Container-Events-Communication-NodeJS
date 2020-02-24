@@ -68,7 +68,6 @@ function sendResultsToEventService(task: ReceivedEventInterface, results: any): 
 }
 
 export function performTaskAndRespond(task: ReceivedEventInterface): void {
-    console.log('called')
     const results = performLogic(task)
     sendResultsToEventService(task, results)
 }
