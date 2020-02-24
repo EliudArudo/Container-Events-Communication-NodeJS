@@ -15,12 +15,14 @@ jobs:
         
         steps:
             - uses: actions/checkout@v1
-            - name: Install And Test
+            - name: Install and Test
+              uses: actions/setup-node@v1
+              with:
+                node-version: '10.x'
               working-directory: ./consuming-frontend  
-              run: |
-                npm install
-                npm test
-
+              run: npm install
+              run: npm test
+                
     cd: 
         runs-on: ubuntu-latest
         needs: ci
