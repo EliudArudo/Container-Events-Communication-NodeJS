@@ -15,7 +15,6 @@ jobs:
         
         steps:
             - uses: actions/checkout@v1
-
             - name: Install And Test
               working-directory: ./consuming-frontend  
               run: |
@@ -30,16 +29,13 @@ jobs:
             - uses: actions/checkout@v1
             - name: Docker login
               run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-
             - name: Build
               working-directory: ./consuming-frontend
               run: docker build -t consuming-frontend .  
-
             - name: Tags  
               run: |
                 docker tag consuming-frontend ${{ secrets.DOCKER_USER }}/consuming-frontend:${{ github.sha }}
                 docker tag consuming-frontend ${{ secrets.DOCKER_USER }}/consuming-frontend:latest
-
             - name: Push
               run: |
                 docker push ${{ secrets.DOCKER_USER }}/consuming-frontend:${{ github.sha }}
