@@ -22,8 +22,8 @@ jobs:
               working-directory: ./consuming-frontend  
             - run: npm install
             - run: npm test
-            env:
-              CI: true   
+              env:
+                CI: true   
                 
     cd: 
         runs-on: ubuntu-latest
