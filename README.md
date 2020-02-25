@@ -1,4 +1,6 @@
 ## An Event Based Microservice Architecture
+[![Actions Status](https://github.com/EliudArudo/Container-Events-Communication-NodeJS/workflows/frontend.yaml/badge.svg)](https://github.com/EliudArudo/Container-Events-Communication-NodeJS/actions)
+
 <div style="height: 50px; width: 120px; display: flex; flex-direction: row; justify-content: center; align-items: center;">
 
 <img style="height: 50px; width: auto; max-width: 50px; margin-right: 20px;" src="images/nodejs.png"/>
