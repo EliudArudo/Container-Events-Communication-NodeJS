@@ -12,17 +12,18 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: node 
-        env:
-            CI: true    
         
         steps:
             - uses: actions/checkout@v1
             - name: Install and Test
+              uses: actions/setup-node@v1
               with:
                 node-version: '10.x'
               working-directory: ./consuming-frontend  
-              run: npm install
-              run: npm test
+            - run: npm install
+            - run: npm test
+            env:
+              CI: true   
                 
     cd: 
         runs-on: ubuntu-latest

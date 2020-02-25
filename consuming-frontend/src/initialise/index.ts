@@ -2,4 +2,4 @@ import "./docker-api"
 import "./express"
 import "./redis"
 
-/* Testing v6 */
+/* Testing v7 */
