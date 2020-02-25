@@ -8,7 +8,7 @@
     "compile": "tsc src/server.ts",
     "runit": "node src/server.js",
     "start": "npm run compile && npm run runit",
-    "test": "mocha --require ts-node/register src/tests/**/*.ts",
+    "test": "mocha --require ts-node/register src/tests/**/*.ts --exit",
     "test-watch": "mocha --watch --watch-extensions ts --require ts-node/register src/tests/**/*.ts"
   },
   "author": "Eliud Arudo",
