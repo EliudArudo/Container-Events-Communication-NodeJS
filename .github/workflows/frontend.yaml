@@ -19,7 +19,7 @@ jobs:
               uses: actions/setup-node@v1
               with:
                 node-version: '10.x'
-              working-directory: ./consuming-frontend  
+            - working-directory: ./consuming-frontend  
             - run: npm install
             - run: npm test
               env:
