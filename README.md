@@ -1,5 +1,5 @@
 ## An Event Based Microservice Architecture
-[GITHUB-BADGE](https://github.com/EliudArudo/Container-Events-Communication-NodeJS/workflows/Frontend%20Tests%20+%20Push/badge.svg)
+![](https://github.com/EliudArudo/Container-Events-Communication-NodeJS/workflows/Frontend%20Tests%20+%20Push/badge.svg)
 
 <div style="height: 50px; width: 120px; display: flex; flex-direction: row; justify-content: center; align-items: center;">
 
