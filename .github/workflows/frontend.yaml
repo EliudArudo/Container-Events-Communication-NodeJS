@@ -23,10 +23,10 @@ jobs:
               working-directory: ./consuming-frontend  
               run: npm install
             - name: Run Tests  
-              env:
-                CI: true   
               working-directory: ./consuming-frontend  
               run: npm test
+              env:
+                CI: true   
                 
     cd: 
         runs-on: ubuntu-latest
