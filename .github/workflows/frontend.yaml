@@ -18,7 +18,6 @@ jobs:
         steps:
             - uses: actions/checkout@v1
             - name: Install and Test
-              uses: actions/setup-node@v1
               with:
                 node-version: '10.x'
               working-directory: ./consuming-frontend  
