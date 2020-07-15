@@ -371,10 +371,10 @@ Query service status once your stack is set up:
 
 *Update a service image* e.g to update consuming-frontend service:
 ```
-> docker service update --force --image eliudarudo/go-events-communication-consuming-frontend:latest   <YOUR-STACK-NAME>_consuming-frontend
+> docker service update --force --image eliudarudo/events-communication-consuming-frontend:latest   <YOUR-STACK-NAME>_consuming-frontend
 
 # Updating service image using your build docker image
-> docker service update --force --image <YOUR-DOCKER-NAME>/go-events-communication-consuming-frontend:latest   <YOUR-STACK-NAME>_consuming-frontend
+> docker service update --force --image <YOUR-DOCKER-NAME>/events-communication-consuming-frontend:latest   <YOUR-STACK-NAME>_consuming-frontend
 ```
 
 *Scale a service*:
