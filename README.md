@@ -454,7 +454,7 @@ Please note the text file's path. `test.txt` is used below as an example.
 
 
 |Frontend/Events/Backend|  response time (avg)          |
-|---------------------|:-----------------------------:|
+|-----------------------|:-----------------------------:|
 | NodeJS/NodeJS/NodeJS  |  2.4s (2500 reqs, 100 reqs/s) |
 | NodeJS/NodeJS/*Go*    |  3.2s (2500 reqs, 100 reqs/s) |
 | NodeJS/*Go*/NodeJS    |  2.4s (500 reqs, 10 reqs/s)   |
@@ -462,6 +462,18 @@ Please note the text file's path. `test.txt` is used below as an example.
 | NodeJS/*Go*/*Go*      |  122ms (1000 reqs, 1 reqs/s)  |
 | *Go*/NodeJS/*Go*      |  2s (500 reqs, 10 reqs/s)     |
 | *Go*/*Go*/NodeJS      |  2.5s(500 reqs, 10 reqs/s)    |
+| NodeJS/NodeJS/*Java*  |  379ms (500 reqs, 10reqs/s)   |
+| NodeJS/*Java*/NodeJS  |  387ms (500 reqs, 10reqs/s)   |
+| *Java*/NodeJS/NodeJS  |  2.8s (500 reqs, 10reqs/s)    |
+| NodeJS/*Java*/*Java*  |  429ms (500 reqs, 10reqs/s)   |
+| *Java*/NodeJS/*Java*  |  2s (500 reqs, 10reqs/s)      |
+| *Java*/*Java*/NodeJS  |  2.2s (500 reqs, 10reqs/s)    |
+| *Go*/*Java*/NodeJS    |  1.7s (500 reqs, 10reqs/s)    |
+| *Go*/NodeJS/*Java*    |  1.7s (500 reqs, 10reqs/s)    |
+| *Java*/*Go*/NodeJS    |  2.8s (500 reqs, 10reqs/s)    |
+| *Java*/NodeJS/*Go*    |  8.8s (500 reqs, 10reqs/s)    |
+| NodeJS/*Go*/*Java*    |  15s (500 reqs, 10reqs/s)     |
+| NodeJS/*Java*/*Go*    |  1s (500 reqs, 10reqs/s)      |
 
  
 ### Deployment
@@ -516,7 +528,7 @@ services:
       - "6379"
   # IMPORTANT consuming services have to have keywords based on the 'task-maps.json' file
   consuming-frontend:
-    image: eliudarudo/go-events-communication-consuming-frontend:dev
+    image: eliudarudo/events-communication-consuming-frontend:dev
     ports:
       - "4000:4000"
     # IMPORTANT - for docker api connection
